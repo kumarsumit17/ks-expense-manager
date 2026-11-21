@@ -12,7 +12,7 @@ A minimalist, privacy-first personal finance and expense tracker. All data stays
 ## Getting started
 
 ```bash
-git clone <repo-url> ks-expense-manager
+git clone --recurse-submodules <repo-url> ks-expense-manager
 cd ks-expense-manager
 ./gradlew assembleDebug
 ```
