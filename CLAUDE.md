@@ -29,13 +29,16 @@ Minimalist, privacy-first personal finance and expense tracker.
 ./gradlew testDebugUnitTest             # money/date math must have unit tests
 ./gradlew connectedDebugAndroidTest     # Room migration tests
 ./gradlew lintDebug
+./gradlew check                         # unit tests, language files, no-INTERNET check
 ```
+- Gradle tasks run from the root apply to the one module, `:mobile:android`. The debug build is `com.ks.expense.debug`.
+- Interface text is in `mobile/android/src/main/lang/{en,hi}.json`; `lang.mjs android` turns it into resources under `build/` before every build.
 
 Emulators (from the KS-Suite workspace; suite spec `specs/testing.md`): `../scripts/emulators.sh create` once, then `../scripts/emulators.sh start phone` boots the phone AVD (`ks-phone-36`, API 36). Then:
 ```bash
 export ANDROID_SERIAL=$(../scripts/emulators.sh serial phone)
 ./gradlew installDebug connectedDebugAndroidTest
-adb shell monkey -p com.ks.expense -c android.intent.category.LAUNCHER 1   # open it (use the debug package if it has a suffix)
+adb shell monkey -p com.ks.expense.debug -c android.intent.category.LAUNCHER 1   # open the debug build
 ```
 
 ## Platform folders

@@ -17,6 +17,8 @@ cd ks-expense-manager
 ./gradlew assembleDebug
 ```
 
+What it does and the roadmap: [specs/plan.md](specs/plan.md).
+
 ## Release
 
 Releases are cut by pushing a semantic version tag (`git tag v1.2.3 && git push --tags`).

@@ -15,7 +15,7 @@ A small, private Android phone app for tracking personal expenses. Everything st
 | Feature | What the user gets | Stage |
 |---|---|---|
 | Quick add | Open the app, tap **+**, type the amount, tap a category, tap **Save**. Today's date, the default currency and an empty note are filled in. Three taps from launch. | 1 |
-| Categories | A starting set (Food, Transport, Shopping, Bills, Health, Entertainment, Other) with an icon each. The user can add, rename and hide categories. A hidden category keeps its expenses. | 1 |
+| Categories | A starting set (Food, Transport, Shopping, Bills, Health, Entertainment, Other) with an emoji icon each. The user can add, rename and hide categories. A hidden category keeps its expenses. | 1 |
 | Monthly view and totals | The home screen is one month: its total, a bar per category (share of the month), and the expenses grouped by day, newest first. Swipe or arrows for other months. Tap an expense to edit or delete it. | 1 |
 | Export to CSV | Writes the expenses to a CSV file the user chooses (Storage Access Framework), for a spreadsheet. | 1 |
 | Backup and restore | **Back up** writes everything (expenses, categories, budgets, recurring rules, settings) to one file the user chooses. **Restore** reads it back after a clear warning, replacing what is on the phone. | 1 |
@@ -33,7 +33,7 @@ Not planned: income tracking, bank sync, cloud sync, accounts, receipts or photo
 Three screens, no navigation library (one state value picks the screen):
 
 1. **Month** (home): total, category bars, the day-grouped list, the **+** button; in stage 2 also budgets and search.
-2. **Add or edit**: a bottom sheet over Month, with the amount field focused and the number keyboard open, category chips, date, note, Save, and Delete when editing.
+2. **Add or edit**: a bottom sheet over Month, with **Save** in its title row (so the keyboard never covers it), the amount field focused with the number keyboard open, category chips, note, date, and Delete when editing. Back or a tap outside cancels.
 3. **Settings**: language, default currency, categories, export, back up, restore, App updates, and in stage 3 recurring rules.
 
 ## Money
@@ -42,12 +42,12 @@ Three screens, no navigation library (one state value picks the screen):
 - **Rupees by default**: the default currency is `INR` on first start (whatever the phone's region; the user can change it in stage 2).
 - **Indian digit grouping**: amounts are shown with `NumberFormat.getCurrencyInstance` for `en-IN` (or `hi-IN` in Hindi) whenever the currency is `INR`: `₹1,23,456.50`. Other currencies use the app language with the phone's region. Latin digits always, as the suite's [language rule](https://github.com/kumarsumit17/ks-utility/blob/main/specs/languages.md#formatting) says.
 - ks-utility `v0.6.0` has no Kotlin money or number formatter (its Kotlin `Translator` groups numbers inside translated sentences only). The plan uses Android's own formatter in this app, which already gives Indian grouping; a ks-utility helper is added only if a second app needs one. Owner decision 2.
-- Unit tests cover parsing ("1,23,456.5", "0.05", too many decimals, empty, too large), zero-decimal currencies (`JPY`), three-decimal ones (`KWD`), sums, and formatting in both languages.
+- Unit tests cover parsing ("1,23,456.5", "0.05", too many decimals, empty, too large), zero-decimal currencies (`JPY`), three-decimal ones (`KWD`) and sums. Formatting is tested on the device (`MoneyFormatTest`), because only Android's formatter groups Indian style; the JVM's does not.
 
 ## Storage
 
 - **Room** database (`expenses.db`): tables `expense` (id, amount_minor, currency, category_id, note, occurred_at epoch millis, created_at), `category` (id, name key or custom name, icon, hidden, sort), and from later stages `budget` and `recurring_rule`. Months and days are grouped in the phone's `ZoneId` at query time. Schemas are exported to `mobile/android/schemas/`; every change has a `Migration` and a migration test ([Constraints](constraints.md)). Stage 2 and 3 tables are added by migrations, not created early.
-- **DataStore** (Preferences) for settings: default currency, first-start done.
+- **DataStore** (Preferences) for settings, from stage 2 (the default currency). Stage 1 needs none: the starting categories are put in when the database is created, and AppCompat keeps the language choice.
 - `android:allowBackup="false"`, and no `INTERNET` permission.
 - **Backup file**: one JSON file, `ks-expense-backup-YYYY-MM-DD.json`, with a format version, written and read with Android's built-in `org.json` (no new library). Restore checks the whole file first and changes nothing if any part is wrong. The database is not encrypted; the phone's own lock and storage encryption protect it.
 - **CSV export**: `date,amount,currency,category,note` with the amount as a plain decimal (`123456.50`), UTF-8 with a byte-order mark so Excel reads Hindi text, RFC 4180 quoting. CSV is for spreadsheets; the JSON file is the backup. This changes the line in [Constraints](constraints.md) that says the CSV export is the backup (owner decision 3).
@@ -80,26 +80,27 @@ All from the version catalog; only the artifacts used.
 | Kotlin standard library, kotlinx-coroutines-android | Language, background work for the database | Apache 2.0 |
 | AndroidX core-ktx, activity-compose | App entry, file pickers (Storage Access Framework) | Apache 2.0 |
 | AndroidX appcompat | Per-app language on Android 8 to 12 (`setApplicationLocales`) | Apache 2.0 |
-| AndroidX lifecycle (viewmodel-compose, runtime-compose) | Screen state that survives rotation | Apache 2.0 |
 | Jetpack Compose (BOM; ui, foundation, material3) | Interface | Apache 2.0 |
 | AndroidX Room (runtime, ktx, compiler) + KSP plugin | Database, migrations, exported schemas | Apache 2.0 |
-| AndroidX DataStore Preferences | Settings | Apache 2.0 |
+| AndroidX DataStore Preferences | Settings (from stage 2) | Apache 2.0 |
+| Compose Material icons core | The few interface icons (+, settings, arrows) | Apache 2.0 |
+| kotlinx-serialization-core (constraint only) | Room brings it; raised to 1.8.1 because room-testing needs it and the test APK must match the app | Apache 2.0 |
 | Tests: JUnit 4, AndroidX Test (runner, ext-junit), room-testing, compose ui-test-junit4, kotlinx-coroutines-test | Unit, migration and screen tests | EPL 1.0 (JUnit 4), Apache 2.0 (the rest) |
 
-**Vico is dropped** from the stack (owner decision 4): the category bars are plain Compose rows, so a chart library adds weight for nothing. It can come back with a real chart need. No dependency injection, navigation, JSON or CSV library: these are small and written by hand.
+**Vico is dropped** from the stack (owner decision 4): the category bars are plain Compose rows, so a chart library adds weight for nothing. It can come back with a real chart need. No dependency injection, navigation, view-model, JSON or CSV library: these are small and written by hand. Screen state is kept with `rememberSaveable`, and the data comes from Room flows.
 
 ## Testing
 
-- `./gradlew testDebugUnitTest`: money parsing and formatting, month and day grouping across time zones and month ends, CSV writing and quoting, backup write and read (round trip, wrong version, broken file), recurring due dates (stage 3), language files (`check`).
-- `./gradlew connectedDebugAndroidTest` on `ks-phone-36`: Room queries, every migration from the first exported schema, and a Compose test of quick add in three taps.
-- `lintDebug`, plus a check in the build that the merged manifest has no `INTERNET` permission.
+- `./gradlew testDebugUnitTest`: money parsing, month and day grouping across time zones and month ends, CSV writing, quoting and formula safety, backup data checks, recurring due dates (stage 3); `checkLanguageFiles` for the language files.
+- `./gradlew connectedDebugAndroidTest` on `ks-phone-36`: money formatting, Room queries and restore, every exported schema opening with the current database, the backup file (round trip, other files, newer versions, broken files; org.json is part of Android), a Compose test of quick add in three taps, and no `INTERNET` permission in the installed app.
+- `lintDebug`, plus `checkNoInternet<Variant>`, which fails the build when a merged manifest asks for `INTERNET` (it runs with `check`, every `assemble` and `bundle`, and in the release workflow's tests).
 - By hand on the phone emulator, each stage: add, edit, delete, month switch, export and open the CSV, back up and restore, both languages, dark theme, a large font size.
 
 ## Roadmap
 
 | Stage | Version | Holds |
 |---|---|---|
-| 1, minimal first version | `v0.1.0` | Gradle build, quick add, categories, month view with totals and category bars, edit and delete, CSV export, backup and restore, English and Hindi, Settings with App updates, release workflow |
+| 1, minimal first version (built and tested on `dev`, 2026-11-24) | `v0.1.0` | Gradle build, quick add, categories, month view with totals and category bars, edit and delete, CSV export, backup and restore, English and Hindi, Settings with App updates, release workflow |
 | 2 | `v0.2.0` | Budgets, search and filters, other currencies |
 | 3 | `v0.3.0` | Recurring expenses, subscriptions from ks-tv-launcher |
 | 1.0 | `v1.0.0` | After the owner has used it on a real phone; Google Play readiness is planned separately |
