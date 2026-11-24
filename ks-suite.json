@@ -1,0 +1,11 @@
+{
+  "name": "KS Expense Manager",
+  "group": "personal",
+  "icon": "wallet",
+  "platforms": ["android"],
+  "stack": "Kotlin · Compose",
+  "tagline": {
+    "en": "Minimal, private tracker for your personal expenses.",
+    "hi": "निजी खर्चों का आसान और प्राइवेट ट्रैकर।"
+  }
+}
