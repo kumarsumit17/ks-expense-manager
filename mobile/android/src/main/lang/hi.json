@@ -1,0 +1,49 @@
+{
+  "app.name": "KS खर्च मैनेजर",
+  "month.total": "इस महीने का खर्च",
+  "month.previous": "पिछला महीना",
+  "month.next": "अगला महीना",
+  "month.empty": "इस महीने कोई खर्च नहीं है। जोड़ने के लिए + दबाएं।",
+  "month.count": {
+    "one": "{count} खर्च",
+    "other": "{count} खर्च"
+  },
+  "expense.add": "खर्च जोड़ें",
+  "expense.edit": "खर्च बदलें",
+  "expense.amount": "रकम",
+  "expense.amountInvalid": "रकम दर्ज करें, जैसे 250 या 99.50।",
+  "expense.category": "कैटेगरी",
+  "expense.note": "नोट (ज़रूरी नहीं)",
+  "expense.date": "तारीख",
+  "expense.deleteTitle": "यह खर्च डिलीट करें?",
+  "category.food": "खाना",
+  "category.transport": "ट्रांसपोर्ट",
+  "category.shopping": "शॉपिंग",
+  "category.bills": "बिल",
+  "category.health": "सेहत",
+  "category.entertainment": "मनोरंजन",
+  "category.other": "अन्य",
+  "categories.title": "कैटेगरी",
+  "categories.add": "कैटेगरी जोड़ें",
+  "categories.name": "नाम",
+  "categories.show": "खर्च जोड़ते समय {name} दिखाएं",
+  "categories.hiddenHint": "छिपी हुई कैटेगरी के खर्च बने रहते हैं।",
+  "data.title": "आपका डेटा",
+  "data.export": "CSV में एक्सपोर्ट करें",
+  "data.exportHint": "स्प्रेडशीट के लिए। यह बैकअप नहीं है।",
+  "data.exported": {
+    "one": "{count} खर्च एक्सपोर्ट हुआ।",
+    "other": "{count} खर्च एक्सपोर्ट हुए।"
+  },
+  "data.backup": "बैकअप लें",
+  "data.backupHint": "ऐप का सारा डेटा आपकी चुनी फ़ाइल में सेव करता है। इसे सुरक्षित जगह रखें।",
+  "data.backedUp": "बैकअप सेव हो गया।",
+  "data.restore": "रीस्टोर करें",
+  "data.restoreTitle": "इस बैकअप से रीस्टोर करें?",
+  "data.restoreWarning": "ऐप में अभी के खर्च और कैटेगरी, बैकअप वालों से बदल दिए जाएंगे।",
+  "data.restored": {
+    "one": "{count} खर्च रीस्टोर हुआ।",
+    "other": "{count} खर्च रीस्टोर हुए।"
+  },
+  "data.badBackup": "यह फ़ाइल KS खर्च मैनेजर का बैकअप नहीं है, या खराब है। कुछ नहीं बदला गया।"
+}

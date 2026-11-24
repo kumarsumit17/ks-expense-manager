@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- The shared ks-utility catalogue is converted whole; this app uses only part of it. -->
+    <issue id="UnusedResources">
+        <ignore path="build/generated/lang/**" />
+    </issue>
+</lint>

@@ -1,0 +1,49 @@
+{
+  "app.name": "KS Expense Manager",
+  "month.total": "Spent this month",
+  "month.previous": "Previous month",
+  "month.next": "Next month",
+  "month.empty": "No expenses this month. Tap + to add one.",
+  "month.count": {
+    "one": "{count} expense",
+    "other": "{count} expenses"
+  },
+  "expense.add": "Add expense",
+  "expense.edit": "Edit expense",
+  "expense.amount": "Amount",
+  "expense.amountInvalid": "Enter an amount, like 250 or 99.50.",
+  "expense.category": "Category",
+  "expense.note": "Note (optional)",
+  "expense.date": "Date",
+  "expense.deleteTitle": "Delete this expense?",
+  "category.food": "Food",
+  "category.transport": "Transport",
+  "category.shopping": "Shopping",
+  "category.bills": "Bills",
+  "category.health": "Health",
+  "category.entertainment": "Entertainment",
+  "category.other": "Other",
+  "categories.title": "Categories",
+  "categories.add": "Add category",
+  "categories.name": "Name",
+  "categories.show": "Show {name} when adding an expense",
+  "categories.hiddenHint": "A hidden category keeps its expenses.",
+  "data.title": "Your data",
+  "data.export": "Export to CSV",
+  "data.exportHint": "For a spreadsheet. It is not a backup.",
+  "data.exported": {
+    "one": "Exported {count} expense.",
+    "other": "Exported {count} expenses."
+  },
+  "data.backup": "Back up",
+  "data.backupHint": "Saves everything in the app to a file you choose. Keep it somewhere safe.",
+  "data.backedUp": "Backup saved.",
+  "data.restore": "Restore",
+  "data.restoreTitle": "Restore from this backup?",
+  "data.restoreWarning": "The expenses and categories now in the app are replaced by the ones in the backup.",
+  "data.restored": {
+    "one": "Restored {count} expense.",
+    "other": "Restored {count} expenses."
+  },
+  "data.badBackup": "This file is not a KS Expense Manager backup, or it is damaged. Nothing was changed."
+}
