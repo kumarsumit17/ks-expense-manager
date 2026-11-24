@@ -9,7 +9,7 @@ Minimalist, privacy-first personal finance and expense tracker.
 - Link between specs with relative markdown links (`[Dependencies](dependencies.md)`), so they also work on GitHub.
 
 ## Stack
-- Kotlin, Jetpack Compose (Material 3), Room, Vico (charts), DataStore
+- Kotlin, Jetpack Compose (Material 3), Room, DataStore (no chart library: the category bars are plain Compose)
 - Package: `com.ks.expense`. Features: `transactions/`, `budgets/`, `reports/`
 - minSdk 26 · targetSdk latest stable
 
@@ -17,9 +17,9 @@ Minimalist, privacy-first personal finance and expense tracker.
 - **Offline only.** Don't declare the `INTERNET` permission. No bank sync, no cloud accounts, no analytics.
 - **Money is never floating point.** Store amounts as `Long` in minor units (paise or cents) plus an ISO-4217 currency code. Format them with `NumberFormat.getCurrencyInstance`. Never use `Double` or `Float` for money.
 - **Dates.** Store `Instant` (UTC epoch millis). Group by month and day in the user's `ZoneId` at query time.
-- **Schema changes** need a Room `Migration` plus an exported schema in `app/schemas/`. Data loss on upgrade is a release blocker.
+- **Schema changes** need a Room `Migration` plus an exported schema in `mobile/android/schemas/`. Data loss on upgrade is a release blocker.
 - **Minimalism.** Adding an expense takes three taps or fewer from launch. Avoid new screens or settings when an existing one can absorb the feature.
-- Import and export use the user's own CSV through the Storage Access Framework. Set `android:allowBackup="false"`. The user's own CSV export is the backup.
+- Files go through the Storage Access Framework only. Set `android:allowBackup="false"`. The backup is a JSON file the user saves and restores ([Build plan](specs/plan.md#storage)); the CSV export is for spreadsheets.
 - **Optional import from `ks-tv-launcher` subscriptions:** a user-started CSV/JSON share intent, which creates recurring expenses. There is no background link between the apps.
 
 ## Commands
@@ -42,7 +42,7 @@ adb shell monkey -p com.ks.expense -c android.intent.category.LAUNCHER 1   # ope
 - Every KS-Suite app repo has the same top-level platform folders: `tv/google-tv/`, `desktop/mac/`, `desktop/windows/`, `mobile/android/` and `mobile/ios/`. All five exist in every app repo, whether or not the app supports that platform yet.
 - This app targets `mobile/android`. The other folders are empty on purpose (a `.gitkeep` only): they mark where that platform's code would go, not missing work. Do not add code for a platform that is not a target without the owner asking.
 - Three layers, narrowest first: a platform folder holds code for one platform of this app; `shared/` in the repository root holds code used by two or more platforms of this app, written once and never copied between platform folders; `ks-utility` holds generic code used by several apps. This app has one target, so it has no `shared/` folder.
-- The skeleton still has `app/` in the repository root. When the Gradle build is created, the app module goes in `mobile/android/`.
+- The app module is `mobile/android/` (Gradle path `:mobile:android`).
 - Never rename, merge or remove these folders, and never add another top-level platform folder; the layout is a suite-wide rule.
 
 ## Shared code (`ks-utility`)

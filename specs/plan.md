@@ -3,12 +3,12 @@ type: Plan
 title: Build plan
 description: What KS Expense Manager does, how it stores and formats money, the libraries it uses, and the staged roadmap from a minimal first version.
 tags: [plan, roadmap, features, storage, money, languages, dependencies]
-status: proposed
+status: approved
 ---
 
 # Build plan
 
-A small, private Android phone app for tracking personal expenses. Everything stays on the phone. It keeps every rule in [Constraints](constraints.md) and [Dependencies](dependencies.md). Status: **proposed**, waiting for the owner's approval; no app code is written before that.
+A small, private Android phone app for tracking personal expenses. Everything stays on the phone. It keeps every rule in [Constraints](constraints.md) and [Dependencies](dependencies.md). Status: **approved** by the owner on 2026-11-24, with the recommended choice for every decision below.
 
 ## Features
 
@@ -107,6 +107,9 @@ All from the version catalog; only the artifacts used.
 Each stage is built and tested on `dev`. The owner is asked before any tag; the repository's four signing secrets must exist first ([signing first](https://github.com/kumarsumit17/KS-Suite/blob/main/specs/versioning-signing.md#a-new-repository-signing-first)), and a rehearsal run must pass.
 
 ## Owner decisions
+
+Approved 2026-11-24: the first option of each.
+
 
 1. **Updates:** stay fully offline, with only the **Get the new version** link (recommended), or allow ks-utility's daily update check, which adds the `INTERNET` permission.
 2. **Money formatting:** Android's formatter in this app (recommended), or a new Kotlin money helper in ks-utility first.

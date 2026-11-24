@@ -13,12 +13,12 @@ A minimalist, privacy-first personal finance and expense tracker. All data stays
 | | |
 |---|---|
 | **Platform** | Android |
-| **Tech stack** | Kotlin, Jetpack Compose, Room, Vico charts, DataStore |
+| **Tech stack** | Kotlin, Jetpack Compose, Room, DataStore |
 
 ## Stack
 
-- Kotlin, Jetpack Compose (Material 3), Room, Vico (charts), DataStore
+- Kotlin, Jetpack Compose (Material 3), Room, DataStore (no chart library: the category bars are plain Compose)
 - Package: `com.ks.expense`. Features: `transactions/`, `budgets/`, `reports/`
 - minSdk 26 · targetSdk latest stable
 
-The app is planned: this repository holds the project structure and its rules, with app code still to come.
+What it does and the roadmap: [Build plan](plan.md).

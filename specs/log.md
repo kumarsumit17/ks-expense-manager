@@ -1,5 +1,6 @@
 # 2026-11-24
 
+* **Update**: [Build plan](plan.md) approved by the owner: offline updates link only, Android's formatter for money, JSON backup next to the CSV export, no Vico, stage 1 as planned. [Constraints](constraints.md): the JSON file is the backup; schemas in `mobile/android/schemas/`. [Overview](overview.md): Vico dropped.
 * **Creation**: [Build plan](plan.md) added as a proposal: features, money, storage with backup and restore, languages, libraries with licences, staged roadmap and five owner decisions.
 
 # 2026-11-23
