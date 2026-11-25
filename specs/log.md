@@ -1,3 +1,7 @@
+# 2026-11-25
+
+* **Update**: `ks-utility` moved from `v0.6.0` to `v0.9.0` (more languages, the translation tools; [ks-utility translation tools](https://github.com/kumarsumit17/ks-utility/blob/main/specs/translating.md)).
+
 # 2026-11-24
 
 * **Update**: Stage 1 built on `dev`: Gradle build in `mobile/android/` (`:mobile:android`, `com.ks.expense`), quick add, categories, month view with totals and category bars, edit and delete, CSV export, JSON backup and restore, English and Hindi, Settings with App updates. Room schema 1 exported to `mobile/android/schemas/`. [Build plan](plan.md): Save moved to the sheet's title row; DataStore and lifecycle libraries left for later stages; kotlinx-serialization-core raised to 1.8.1 by a constraint (room-testing needs it). New dependencies, all Apache 2.0: AndroidX core-ktx, activity-compose, appcompat, Compose (ui, foundation, material3, material-icons-core), Room 2.8.5 with KSP; tests: JUnit 4 (EPL 1.0), AndroidX Test, room-testing, compose ui-test.
