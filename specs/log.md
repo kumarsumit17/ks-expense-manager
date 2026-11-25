@@ -1,5 +1,6 @@
 # 2026-11-25
 
+* **Creation**: [Per-platform optimization plan](plan-per-platform.md) added as a proposal, for the suite rule that each platform build is optimized for its OS: an audit of the Android phone build and the changes (launcher shortcut, cold start, locale filter, hide in Recents, accessibility pass), with four owner decisions.
 * **Update**: `ks-utility` moved from `v0.6.0` to `v0.9.0` (more languages, the translation tools; [ks-utility translation tools](https://github.com/kumarsumit17/ks-utility/blob/main/specs/translating.md)).
 
 # 2026-11-24
