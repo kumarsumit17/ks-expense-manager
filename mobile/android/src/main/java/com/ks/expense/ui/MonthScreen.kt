@@ -32,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +47,12 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 import com.ks.expense.R
 import com.ks.expense.data.Category
 import com.ks.expense.data.Expense
@@ -63,7 +69,7 @@ import java.time.format.DateTimeFormatter
 /** Home: one month, its totals, a bar per category and the expenses grouped by day. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MonthScreen(store: ExpenseStore, onSettings: () -> Unit) {
+fun MonthScreen(store: ExpenseStore, openAdd: Boolean = false, onAddOpened: () -> Unit = {}, onSettings: () -> Unit) {
     val zone = ZoneId.systemDefault()
     var monthText by rememberSaveable { mutableStateOf(YearMonth.now(zone).toString()) }
     val month = YearMonth.parse(monthText)
@@ -76,6 +82,14 @@ fun MonthScreen(store: ExpenseStore, onSettings: () -> Unit) {
     var adding by rememberSaveable { mutableStateOf(false) }
     var editingId by rememberSaveable { mutableStateOf<Long?>(null) }
     val scope = rememberCoroutineScope()
+    // The launcher shortcut opens the add sheet straight away.
+    LaunchedEffect(openAdd) {
+        if (openAdd) {
+            editingId = null
+            adding = true
+            onAddOpened()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -195,10 +209,16 @@ private fun TotalCard(totals: List<Total>, count: Int) {
 
 @Composable
 private fun CategoryBar(category: Category, total: CategoryTotal) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 6.dp)) {
+    val label = categoryLabel(category)
+    val amount = money(total.amountMinor, total.currency)
+    val sentence = stringResource(R.string.month_category_share, label, amount, (total.share * 100).roundToInt().toString())
+    Column(
+        Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 6.dp)
+            .clearAndSetSemantics { contentDescription = sentence },
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("${category.icon}  ${categoryLabel(category)}", modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(money(total.amountMinor, total.currency), fontWeight = FontWeight.Medium)
+            Text("${category.icon}  $label", modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(amount, fontWeight = FontWeight.Medium)
         }
         Spacer(Modifier.height(4.dp))
         Box(
@@ -221,7 +241,8 @@ private fun DayHeader(day: DayGroup) {
         Spacer(Modifier.height(12.dp))
         HorizontalDivider()
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 4.dp),
+            modifier = Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 4.dp)
+                .semantics(mergeDescendants = true) { heading() },
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(day.date.format(formatter), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
@@ -238,7 +259,9 @@ private fun DayHeader(day: DayGroup) {
 private fun ExpenseRow(expense: Expense, category: Category?, onClick: () -> Unit) {
     ListItem(
         modifier = Modifier.clickable(onClick = onClick).padding(horizontal = 8.dp),
-        leadingContent = { Text(category?.icon ?: "", style = MaterialTheme.typography.titleLarge, modifier = Modifier.width(32.dp)) },
+        leadingContent = {
+            Text(category?.icon ?: "", style = MaterialTheme.typography.titleLarge, modifier = Modifier.width(32.dp).clearAndSetSemantics {})
+        },
         headlineContent = { Text(category?.let { categoryLabel(it) } ?: "") },
         supportingContent = expense.note.takeIf { it.isNotBlank() }?.let { note ->
             { Text(note, maxLines = 1, overflow = TextOverflow.Ellipsis) }

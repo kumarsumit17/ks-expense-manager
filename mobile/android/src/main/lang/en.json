@@ -8,6 +8,7 @@
     "one": "{count} expense",
     "other": "{count} expenses"
   },
+  "month.categoryShare": "{name}, {amount}, {percent}% of this month",
   "expense.add": "Add expense",
   "expense.edit": "Edit expense",
   "expense.amount": "Amount",

@@ -70,6 +70,11 @@ android {
         }
     }
 
+    // English and Hindi only: drops the other languages AppCompat and Material bring.
+    androidResources {
+        localeFilters += listOf("en", "hi")
+    }
+
     // Interface text: generated from src/main/lang by ks-utility's lang.mjs (below).
     sourceSets.getByName("main").res.directories.add("build/generated/lang/res")
 

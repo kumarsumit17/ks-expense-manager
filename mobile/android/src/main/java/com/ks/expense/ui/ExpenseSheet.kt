@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -35,7 +37,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -82,6 +87,7 @@ fun ExpenseSheet(
     val amount = Money.parse(amountText, currency)
     val shown = categories.filter { !it.hidden || it.id == existing?.categoryId }
     val focus = remember { FocusRequester() }
+    val haptics = LocalHapticFeedback.current
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
@@ -107,6 +113,7 @@ fun ExpenseSheet(
                                 date.atTime(time).atZone(zone).toInstant().toEpochMilli()
                             }
                         }
+                        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
                         onSave(
                             Expense(
                                 id = existing?.id ?: 0,
@@ -143,7 +150,11 @@ fun ExpenseSheet(
                     FilterChip(
                         selected = category.id == categoryId,
                         onClick = { categoryId = category.id },
-                        label = { Text("${category.icon} ${categoryLabel(category)}") },
+                        label = {
+                            Text(category.icon, modifier = Modifier.clearAndSetSemantics {})
+                            Spacer(Modifier.width(6.dp))
+                            Text(categoryLabel(category))
+                        },
                     )
                 }
             }
@@ -201,6 +212,7 @@ fun ExpenseSheet(
             confirmButton = {
                 TextButton(onClick = {
                     confirmDelete = false
+                    haptics.performHapticFeedback(HapticFeedbackType.Reject)
                     onDelete(existing)
                 }) { Text(stringResource(R.string.common_delete)) }
             },

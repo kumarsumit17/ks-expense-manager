@@ -90,4 +90,12 @@ Each step is one or more commits on `dev`, tested before the next. Nothing is pu
 | 3 | Accessibility pass (TalkBack, 200 % font, contrast) | Phone emulator with TalkBack; Accessibility Scanner by hand |
 | 4 | Decision 1 (b or c), or the baseline profile, if chosen | Phone emulator; unit and device tests; language switch in both directions |
 
+### Results (2026-11-25, steps 1 to 3 built on `dev`)
+
+- **Size**: release APK 2.14 MB → **1.81 MB**; `resources.arsc` 438 KB → 110 KB with the English and Hindi locale filter.
+- **Cold start**: not settled. On the phone emulator the release build took 0.7–1.8 s (first start after install 4.4 s) while the Mac ran five emulators (load average about 20); the system Settings app took 1.05–1.6 s on the same emulator. A fully compiled install was not clearly faster under that load. The owner measures on a real phone; the baseline profile (decision 3) waits for that number.
+- **Done**: locale filter, early database open, StrictMode in debug builds, the "Add expense" launcher shortcut (a dynamic shortcut, so its label follows the app language; `ShortcutTest`), haptics on Save and Delete, the accessibility changes (emoji left out of TalkBack, each category bar one sentence, day headers as headings), 200 % font checked.
+- **Recents**: on Android 13+ the stored thumbnail is blank (checked). On Android 8–12 a cover is drawn while the app is paused (not run: no emulator below API 36 here). Opening Recents straight from the app still shows the live screen on every version, because Android keeps the app resumed during that animation; only `FLAG_SECURE` would hide it, and that would also block the user's own screenshots, so it is not used.
+- **Not done here**: a TalkBack session by ear (the emulator image has no TalkBack; the accessibility tree was checked instead), predictive back by hand, landscape by hand.
+
 A real phone check by the owner follows each release ([Release cycle](https://github.com/kumarsumit17/KS-Suite/blob/main/specs/release-cycle.md), step 5).

@@ -8,6 +8,7 @@
     "one": "{count} खर्च",
     "other": "{count} खर्च"
   },
+  "month.categoryShare": "{name}, {amount}, इस महीने का {percent}%",
   "expense.add": "खर्च जोड़ें",
   "expense.edit": "खर्च बदलें",
   "expense.amount": "रकम",

@@ -35,7 +35,7 @@ class AppTest {
     @Test fun quickAddInThreeTaps() {
         compose.onNodeWithContentDescription(res.getString(R.string.expense_add)).performClick()
         compose.onNodeWithTag("amount").performTextInput("1234.5")
-        compose.onNodeWithText("🍛 " + res.getString(R.string.category_food)).performClick()
+        compose.onNodeWithText(res.getString(R.string.category_food)).performClick()
         compose.onNodeWithText(res.getString(R.string.common_save)).performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithText("₹1,234.50").fetchSemanticsNodes().isNotEmpty() }
         compose.onAllNodesWithText("₹1,234.50").onFirst().assertIsDisplayed()

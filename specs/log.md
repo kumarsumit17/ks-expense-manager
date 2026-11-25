@@ -1,5 +1,6 @@
 # 2026-11-25
 
+* **Update**: [Per-platform optimization plan](plan-per-platform.md) steps 1–3 built: English and Hindi locale filter (APK 2.14 → 1.81 MB), early database open, StrictMode in debug, the "Add expense" launcher shortcut, haptics, Recents hidden on Android 13+ (cover on 8–12), accessibility changes. Results and what is not settled (cold start) are in its section 4. New language key `month.categoryShare`.
 * **Update**: [Per-platform optimization plan](plan-per-platform.md) approved: keep AppCompat, hide in Recents, baseline profile only if cold start is slow, plain `vX.Y.Z` tags.
 * **Creation**: [Per-platform optimization plan](plan-per-platform.md) added as a proposal, for the suite rule that each platform build is optimized for its OS: an audit of the Android phone build and the changes (launcher shortcut, cold start, locale filter, hide in Recents, accessibility pass), with four owner decisions.
 * **Update**: `ks-utility` moved from `v0.6.0` to `v0.9.0` (more languages, the translation tools; [ks-utility translation tools](https://github.com/kumarsumit17/ks-utility/blob/main/specs/translating.md)).

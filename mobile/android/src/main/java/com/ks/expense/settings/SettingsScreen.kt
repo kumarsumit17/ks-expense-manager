@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -141,7 +142,7 @@ fun SettingsScreen(store: ExpenseStore, onBack: () -> Unit) {
                 val label = categoryLabel(category)
                 ListItem(
                     modifier = Modifier.clickable { editing = category },
-                    leadingContent = { Text(category.icon, style = MaterialTheme.typography.titleLarge) },
+                    leadingContent = { Text(category.icon, style = MaterialTheme.typography.titleLarge, modifier = Modifier.clearAndSetSemantics {}) },
                     headlineContent = { Text(label) },
                     trailingContent = {
                         Switch(
