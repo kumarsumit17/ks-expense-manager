@@ -3,12 +3,12 @@ type: Plan
 title: Per-platform optimization plan
 description: How the one KS Expense Manager build, the Android phone app, is made the best it can be on Android, with an audit of the build today and what changes, keeping dependencies to the minimum.
 tags: [plan, platforms, android, performance, accessibility, privacy]
-status: proposed
+status: approved
 ---
 
 # Per-platform optimization plan
 
-**Status: proposed** (2026-11-25), waiting for the owner's approval. Nothing here is built before that.
+**Status: approved** by the owner on 2026-11-25, with the recommended choice for each decision in section 3: keep AppCompat, hide the app in Recents, a baseline profile only if cold start misses its target, plain `vX.Y.Z` tags.
 
 The suite rule ([Platform folders](https://github.com/kumarsumit17/KS-Suite/blob/main/specs/platform-folders.md), "Each platform build is optimized for its OS") says each platform build is its own app, tuned to its OS. KS Expense Manager has **one target, the Android phone** (`mobile/android/`). The other four folders stay empty: a TV interface is unusable for typing amounts, and macOS, Windows and iOS are not targets (adding one is the owner's decision and would start its own section here). So this plan is about one build, made as good as it can be on Android phones. It sits next to the feature roadmap in the [Build plan](plan.md), which it does not change.
 
