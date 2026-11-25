@@ -72,6 +72,12 @@ import java.time.ZoneId
 
 private val REPO = GitHubRepo.parse("kumarsumit17/ks-expense-manager")!!
 
+/**
+ * The releases list, newest first. Not `releases/latest`: Android releases have their own
+ * `android-v…` tags and are not marked latest (specs/app-updates.md).
+ */
+private val RELEASES_PAGE = "https://github.com/${REPO.owner}/${REPO.name}/releases"
+
 /** Settings: language, categories, your data (export, back up, restore) and app updates. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -193,7 +199,7 @@ fun SettingsScreen(store: ExpenseStore, onBack: () -> Unit) {
                     OutlinedButton(
                         onClick = {
                             try {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, REPO.latestReleasePageUrl.toUri()))
+                                context.startActivity(Intent(Intent.ACTION_VIEW, RELEASES_PAGE.toUri()))
                             } catch (_: ActivityNotFoundException) {
                                 scope.launch { snackbar.showSnackbar(resources.getString(R.string.common_error_generic)) }
                             }

@@ -32,6 +32,7 @@ Minimalist, privacy-first personal finance and expense tracker.
 ./gradlew check                         # unit tests, language files, no-INTERNET check
 ```
 - Gradle tasks run from the root apply to the one module, `:mobile:android`. The debug build is `com.ks.expense.debug`.
+- Releases: tag `android-vX.Y.Z` (annotated, on `main`; the suite's platform tags, used by one-platform apps too). v0.1.0 and v0.1.1 (the bridge release) have plain tags; no plain tag after that. Rehearse with Actions › Release › Run workflow (`platform: android`).
 - Interface text is in `mobile/android/src/main/lang/{en,hi}.json`; `lang.mjs android` turns it into resources under `build/` before every build.
 
 Emulators (from the KS-Suite workspace; suite spec `specs/testing.md`): `../scripts/emulators.sh create` once, then `../scripts/emulators.sh start phone` boots the phone AVD (`ks-phone-36`, API 36). Then:

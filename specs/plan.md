@@ -66,8 +66,8 @@ As [App updates](app-updates.md) says: Settings shows "This is version X" and **
 
 - One Android application module at `mobile/android/` (Gradle path `:mobile:android`), package and application id `com.ks.expense`, debug build `com.ks.expense.debug`. Packages `transactions/`, `budgets/`, `reports/`, plus `data/`, `settings/`, `backup/`, `ui/`. The empty root `app/` skeleton is removed.
 - Kotlin 2.4.21, AGP 9.5.2, Gradle 9.9.1 (as the other suite apps), JDK 17, minSdk 26, compile and target SDK 37.
-- `ks-utility` moves from `v0.3.0` to `v0.6.0` in its own commit; `includeBuild("ks-utility/kotlin")`.
-- Version from `-PversionName` / `-PversionCode`; `0.0.0` / `1` for local builds.
+- `ks-utility` is pinned to a tag (now `v0.10.0`), moved in its own commit; `includeBuild("ks-utility/kotlin")`.
+- Version from `-PversionName` / `-PversionCode`; `0.0.0` / `1` for local builds. Releases are tagged `android-vX.Y.Z` (suite rule; v0.1.0 and the v0.1.1 bridge release have plain tags).
 - Release: `.github/workflows/release.yml` calls `kotlin-app-release.yml@v0.6.0` with `android-module: ":mobile:android"` and no `tv-module`.
 
 ## Libraries
@@ -101,9 +101,9 @@ All from the version catalog; only the artifacts used.
 | Stage | Version | Holds |
 |---|---|---|
 | 1, minimal first version (built and tested on `dev`, 2026-11-24) | `v0.1.0` | Gradle build, quick add, categories, month view with totals and category bars, edit and delete, CSV export, backup and restore, English and Hindi, Settings with App updates, release workflow |
-| 2 | `v0.2.0` | Budgets, search and filters, other currencies |
-| 3 | `v0.3.0` | Recurring expenses, subscriptions from ks-tv-launcher |
-| 1.0 | `v1.0.0` | After the owner has used it on a real phone; Google Play readiness is planned separately |
+| 2 | `android-v0.2.0` | Budgets, search and filters, other currencies |
+| 3 | `android-v0.3.0` | Recurring expenses, subscriptions from ks-tv-launcher |
+| 1.0 | `android-v1.0.0` | After the owner has used it on a real phone; Google Play readiness is planned separately |
 
 Each stage is built and tested on `dev`. The owner is asked before any tag; the repository's four signing secrets must exist first ([signing first](https://github.com/kumarsumit17/KS-Suite/blob/main/specs/versioning-signing.md#a-new-repository-signing-first)), and a rehearsal run must pass.
 

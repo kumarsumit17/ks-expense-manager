@@ -8,7 +8,7 @@ status: approved
 
 # Per-platform optimization plan
 
-**Status: approved** by the owner on 2026-11-25, with the recommended choice for each decision in section 3: keep AppCompat, hide the app in Recents, a baseline profile only if cold start misses its target, plain `vX.Y.Z` tags.
+**Status: approved** by the owner on 2026-11-25, with the recommended choice for each decision in section 3: keep AppCompat, hide the app in Recents, a baseline profile only if cold start misses its target, plain `vX.Y.Z` tags (decision 4 later changed by the suite rule to `android-vX.Y.Z`).
 
 The suite rule ([Platform folders](https://github.com/kumarsumit17/KS-Suite/blob/main/specs/platform-folders.md), "Each platform build is optimized for its OS") says each platform build is its own app, tuned to its OS. KS Expense Manager has **one target, the Android phone** (`mobile/android/`). The other four folders stay empty: a TV interface is unusable for typing amounts, and macOS, Windows and iOS are not targets (adding one is the owner's decision and would start its own section here). So this plan is about one build, made as good as it can be on Android phones. It sits next to the feature roadmap in the [Build plan](plan.md), which it does not change.
 
@@ -26,7 +26,7 @@ The suite rule ([Platform folders](https://github.com/kumarsumit17/KS-Suite/blob
 | Dependencies | AndroidX core-ktx, activity-compose, appcompat, Compose (ui, foundation, material3, material-icons-core), Room with KSP, ks-utility. AppCompat is there only for the per-app language below Android 13. |
 | OS integrations | Per-app language (`locales_config.xml`, AppCompat stores the choice); file export and import through the Storage Access Framework. No share target yet (planned in stage 3 for ks-tv-launcher's subscriptions). |
 | Accessibility | Labels on the icon buttons (+, Settings, month arrows, Back) and on each category switch. Checked by hand at 130 % font size in light and dark. **Not checked with TalkBack**; the emoji icons are read out next to the category name ("curry rice, Food"); the category bars are separate nodes, not one sentence; 200 % font size not checked. |
-| Version | One tag `vX.Y.Z` builds the one APK and AAB. |
+| Version | One tag `vX.Y.Z` builds the one APK and AAB (at the time of the audit; now `android-vX.Y.Z`, decision 4). |
 
 ## 2. The plan for Android (`mobile/android/`)
 
@@ -77,7 +77,7 @@ No new runtime dependency is needed for anything below. Items that would need on
    - (c) Raise `minSdk` to 33 (Android 13) and drop it: simplest code, but phones on Android 8–12 can no longer install the app.
 2. **Hide the app in Recents** (2.4): yes (recommended), or keep the thumbnail.
 3. **Baseline profile** (2.2): add it only if cold start misses the target (recommended), or add it now.
-4. **Version tags**: keep plain `vX.Y.Z` (recommended; there is only one platform). If the suite moves every app to per-platform tags (as ks-jaiplayer did with `android-vX.Y.Z`), this app follows in the same change as the shared workflow.
+4. **Version tags**: changed by the suite rule of 2026-11-25 (owner): every app tags each platform's release, and a one-platform app uses its prefix too. This app's releases are `android-vX.Y.Z` from the release after v0.1.1. v0.1.1 is one plain-tag bridge release: copies of v0.1.0 open `releases/latest` from **Get the new version**, and platform releases are not marked latest, so v0.1.1 is the last release that link reaches; from v0.1.1 on the button opens the releases list.
 
 ## 4. Build order and testing
 

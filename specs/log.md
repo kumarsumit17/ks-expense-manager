@@ -1,5 +1,6 @@
 # 2026-11-25
 
+* **Update**: Platform tags (suite rule, 2026-11-25): releases are tagged `android-vX.Y.Z` from the release after v0.1.1. The release workflow calls `kotlin-app-release.yml@v0.10.0`, takes `*-v*.*.*` tags and a rehearsal `platform` input. [App updates](app-updates.md): **Get the new version** opens the releases list, because Android releases are not marked latest; v0.1.1 is a plain-tag bridge release so copies of v0.1.0 reach it. [Per-platform plan](plan-per-platform.md) decision 4 and the [Build plan](plan.md) roadmap updated.
 * **Update**: `ks-utility` moved from `v0.9.0` to `v0.10.0` (platform tags in the shared release workflow and the update helpers). Its Kotlin code still has no network code, so no `INTERNET` permission comes with it.
 * **Update**: [Per-platform optimization plan](plan-per-platform.md) steps 1–3 built: English and Hindi locale filter (APK 2.14 → 1.81 MB), early database open, StrictMode in debug, the "Add expense" launcher shortcut, haptics, Recents hidden on Android 13+ (cover on 8–12), accessibility changes. Results and what is not settled (cold start) are in its section 4. New language key `month.categoryShare`.
 * **Update**: [Per-platform optimization plan](plan-per-platform.md) approved: keep AppCompat, hide in Recents, baseline profile only if cold start is slow, plain `vX.Y.Z` tags.
