@@ -70,7 +70,7 @@ import java.io.IOException
 import java.time.LocalDate
 import java.time.ZoneId
 
-private val REPO = GitHubRepo.parse("kumarsumit17/ks-expense-manager")!!
+private val REPO = GitHubRepo.parse("kumasumit/ks-expense-manager")!!
 
 /**
  * The releases list, newest first. Not `releases/latest`: Android releases have their own

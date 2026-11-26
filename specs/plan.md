@@ -24,7 +24,7 @@ A small, private Android phone app for tracking personal expenses. Everything st
 | Search and filters | A search field on the month view (note text and amount) and filter chips (category, date range). It finds across all months. | 2 |
 | Other currencies | Pick the default currency in Settings and, optionally, another currency for one expense. Totals are shown per currency; there is no conversion (no exchange rates offline). | 2 |
 | Recurring expenses | A rule (amount, category, note, monthly or yearly or weekly, next date). When the app opens, due ones are added and shown in a short list ("3 added"). No background work. | 3 |
-| Subscriptions from ks-tv-launcher | The user shares ks-tv-launcher's subscription CSV to this app; it shows the rows and creates recurring rules for the ones the user ticks ([contract](https://github.com/kumarsumit17/KS-Suite/blob/main/specs/cross-repo.md): `name,amount_minor,currency,cycle,next_due`). | 3 |
+| Subscriptions from ks-tv-launcher | The user shares ks-tv-launcher's subscription CSV to this app; it shows the rows and creates recurring rules for the ones the user ticks ([contract](https://github.com/kumasumit/KS-Suite/blob/main/specs/cross-repo.md): `name,amount_minor,currency,cycle,next_due`). | 3 |
 
 Not planned: income tracking, bank sync, cloud sync, accounts, receipts or photos, notifications, widgets, charts beyond the category bars. Each would be a new decision.
 
@@ -40,7 +40,7 @@ Three screens, no navigation library (one state value picks the screen):
 
 - Amounts are a `Long` in minor units (paise, cents) plus an ISO 4217 code, as [Constraints](constraints.md) require. Typed text is parsed straight to minor units with `BigDecimal`, never `Double`. Sums are `Long` sums in SQL per currency.
 - **Rupees by default**: the default currency is `INR` on first start (whatever the phone's region; the user can change it in stage 2).
-- **Indian digit grouping**: amounts are shown with `NumberFormat.getCurrencyInstance` for `en-IN` (or `hi-IN` in Hindi) whenever the currency is `INR`: `₹1,23,456.50`. Other currencies use the app language with the phone's region. Latin digits always, as the suite's [language rule](https://github.com/kumarsumit17/ks-utility/blob/main/specs/languages.md#formatting) says.
+- **Indian digit grouping**: amounts are shown with `NumberFormat.getCurrencyInstance` for `en-IN` (or `hi-IN` in Hindi) whenever the currency is `INR`: `₹1,23,456.50`. Other currencies use the app language with the phone's region. Latin digits always, as the suite's [language rule](https://github.com/kumasumit/ks-utility/blob/main/specs/languages.md#formatting) says.
 - ks-utility `v0.6.0` has no Kotlin money or number formatter (its Kotlin `Translator` groups numbers inside translated sentences only). The plan uses Android's own formatter in this app, which already gives Indian grouping; a ks-utility helper is added only if a second app needs one. Owner decision 2.
 - Unit tests cover parsing ("1,23,456.5", "0.05", too many decimals, empty, too large), zero-decimal currencies (`JPY`), three-decimal ones (`KWD`) and sums. Formatting is tested on the device (`MoneyFormatTest`), because only Android's formatter groups Indian style; the JVM's does not.
 
@@ -54,7 +54,7 @@ Three screens, no navigation library (one state value picks the screen):
 
 ## Languages
 
-- The suite rule through ks-utility ([Languages](https://github.com/kumarsumit17/ks-utility/blob/main/specs/languages.md)): text in `mobile/android/src/main/lang/en.json` and `hi.json` with the shared catalogue, turned into Android string resources by `lang.mjs android` before each build, checked by `lang.mjs check` in `check`. Hindi follows the [Hindi style guide](https://github.com/kumarsumit17/ks-utility/blob/main/specs/hindi-style.md).
+- The suite rule through ks-utility ([Languages](https://github.com/kumasumit/ks-utility/blob/main/specs/languages.md)): text in `mobile/android/src/main/lang/en.json` and `hi.json` with the shared catalogue, turned into Android string resources by `lang.mjs android` before each build, checked by `lang.mjs check` in `check`. Hindi follows the [Hindi style guide](https://github.com/kumasumit/ks-utility/blob/main/specs/hindi-style.md).
 - Follow the system, allow a choice, remember it: `AppCompatDelegate.setApplicationLocales` with `en` and `hi` in `locales_config.xml`. Settings offers "Same as the system", English, हिन्दी.
 - Category names of the starting set are language keys, so they change with the language; names the user types stay as typed.
 
@@ -105,7 +105,7 @@ All from the version catalog; only the artifacts used.
 | 3 | `android-v0.3.0` | Recurring expenses, subscriptions from ks-tv-launcher |
 | 1.0 | `android-v1.0.0` | After the owner has used it on a real phone; Google Play readiness is planned separately |
 
-Each stage is built and tested on `dev`. The owner is asked before any tag; the repository's four signing secrets must exist first ([signing first](https://github.com/kumarsumit17/KS-Suite/blob/main/specs/versioning-signing.md#a-new-repository-signing-first)), and a rehearsal run must pass.
+Each stage is built and tested on `dev`. The owner is asked before any tag; the repository's four signing secrets must exist first ([signing first](https://github.com/kumasumit/KS-Suite/blob/main/specs/versioning-signing.md#a-new-repository-signing-first)), and a rehearsal run must pass.
 
 ## Owner decisions
 

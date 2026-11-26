@@ -1,3 +1,7 @@
+# 2026-11-26
+
+* **Update**: The repository moved from the GitHub account `kumarsumit17` to `kumasumit`: release workflow (`kumasumit/ks-utility/...@v0.10.0`), submodule URL, the App updates link and every doc link changed. The old address redirects, so copies of v0.1.0 still reach the releases.
+
 # 2026-11-25
 
 * **Update**: Platform tags (suite rule, 2026-11-25): releases are tagged `android-vX.Y.Z` from the release after v0.1.1. The release workflow calls `kotlin-app-release.yml@v0.10.0`, takes `*-v*.*.*` tags and a rehearsal `platform` input. [App updates](app-updates.md): **Get the new version** opens the releases list, because Android releases are not marked latest; v0.1.1 is a plain-tag bridge release so copies of v0.1.0 reach it. [Per-platform plan](plan-per-platform.md) decision 4 and the [Build plan](plan.md) roadmap updated.
@@ -5,7 +9,7 @@
 * **Update**: [Per-platform optimization plan](plan-per-platform.md) steps 1–3 built: English and Hindi locale filter (APK 2.14 → 1.81 MB), early database open, StrictMode in debug, the "Add expense" launcher shortcut, haptics, Recents hidden on Android 13+ (cover on 8–12), accessibility changes. Results and what is not settled (cold start) are in its section 4. New language key `month.categoryShare`.
 * **Update**: [Per-platform optimization plan](plan-per-platform.md) approved: keep AppCompat, hide in Recents, baseline profile only if cold start is slow, plain `vX.Y.Z` tags.
 * **Creation**: [Per-platform optimization plan](plan-per-platform.md) added as a proposal, for the suite rule that each platform build is optimized for its OS: an audit of the Android phone build and the changes (launcher shortcut, cold start, locale filter, hide in Recents, accessibility pass), with four owner decisions.
-* **Update**: `ks-utility` moved from `v0.6.0` to `v0.9.0` (more languages, the translation tools; [ks-utility translation tools](https://github.com/kumarsumit17/ks-utility/blob/main/specs/translating.md)).
+* **Update**: `ks-utility` moved from `v0.6.0` to `v0.9.0` (more languages, the translation tools; [ks-utility translation tools](https://github.com/kumasumit/ks-utility/blob/main/specs/translating.md)).
 
 # 2026-11-24
 
@@ -16,7 +20,7 @@
 
 # 2026-11-23
 
-* **Update**: Release: `.github/workflows/release.yml` now calls ks-utility's shared release workflow (`kotlin-app-release.yml@v0.4.0`, [spec](https://github.com/kumarsumit17/ks-utility/blob/main/specs/release-workflow.md)): one workflow for every Kotlin app, with a rehearsal input, pinned actions, signature checks, build-provenance attestations and `gh` publishing.
+* **Update**: Release: `.github/workflows/release.yml` now calls ks-utility's shared release workflow (`kotlin-app-release.yml@v0.4.0`, [spec](https://github.com/kumasumit/ks-utility/blob/main/specs/release-workflow.md)): one workflow for every Kotlin app, with a rehearsal input, pinned actions, signature checks, build-provenance attestations and `gh` publishing.
 * **Creation**: [App updates](app-updates.md) added: the App updates section shows the version and a Get the new version link to the GitHub releases page; no update check or download, because of the offline constraint.
 * **Update**: `ks-utility` moved to `v0.3.0`.
 
