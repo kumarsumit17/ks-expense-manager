@@ -24,7 +24,7 @@ A small, private Android phone app for tracking personal expenses. Everything st
 | Search and filters | A search field on the month view (note text and amount) and filter chips (category, date range). It finds across all months. | 2 |
 | Other currencies | Pick the default currency in Settings and, optionally, another currency for one expense. Totals are shown per currency; there is no conversion (no exchange rates offline). | 2 |
 | Recurring expenses | A rule (amount, category, note, monthly or yearly or weekly, next date). When the app opens, due ones are added and shown in a short list ("3 added"). No background work. | 3 |
-| Subscriptions from ks-tv-launcher | The user shares ks-tv-launcher's subscription CSV to this app; it shows the rows and creates recurring rules for the ones the user ticks ([contract](https://github.com/kumasumit/KS-Suite/blob/main/specs/cross-repo.md): `name,amount_minor,currency,cycle,next_due`). | 3 |
+| Subscriptions from ks-tv-launcher | The user shares ks-tv-launcher's subscription CSV to this app; it shows the rows and creates recurring rules for the ones the user ticks ([contract](https://github.com/kumasumit/ks-suite/blob/main/specs/cross-repo.md): `name,amount_minor,currency,cycle,next_due`). | 3 |
 
 Not planned: income tracking, bank sync, cloud sync, accounts, receipts or photos, notifications, widgets, charts beyond the category bars. Each would be a new decision.
 
@@ -102,6 +102,13 @@ All from the version catalog; only the artifacts used.
 - **Backup** format version 2 adds `budgets`; version 1 files still restore (no budgets).
 - **Other currencies** (built 2026-11-26, `android-v0.3.0`): Settings has **Default currency** (rupees until changed), picked from a list with common currencies first (rupee, dollar, euro, pound, dirham, riyal …) and a search field for every other ISO 4217 currency. New expenses and budgets start in it; the add sheet has a **Currency** chip to use another one for that expense, so the three-tap path is unchanged. Totals, day totals and search results are shown per currency, the default first; nothing is converted (no exchange rates offline). A budget counts only expenses in its own currency. The setting is kept in Android's own SharedPreferences (no DataStore library) and goes into the backup, format version 3.
 
+## Stage 3 design (built 2026-11-26, `android-v0.4.0`)
+
+- **Recurring expenses** (`recurring/`): a `recurring_rule` table (schema 3, `MIGRATION_2_3`) with amount, currency, category, note, cycle (`weekly`, `monthly`, `yearly`), the day of the month it keeps, the next date, and whether it is paused. No new screen for adding one: the add sheet has a **Repeat** chip (Never, every week, month or year) for a new expense, which records the expense now and starts the rule one cycle later. Settings has a **Recurring expenses** section listing them (amount, how often, next date); tapping one edits amount, category, note, cycle, next date, pause, or deletes it (expenses it already added stay).
+- **When they are added**: each time the app opens or comes back, every active rule due on or before today adds its expense (at noon on its date) and moves to its next date, in one database transaction, so nothing is added twice; the month screen says "3 recurring expenses added". There is no background work, alarm or notification. A monthly rule started on the 31st falls on the last day of shorter months and goes back to the 31st; at most 60 expenses are added for one rule at once.
+- **Subscriptions from ks-tv-launcher**: the app is a share target for `text/csv` (`ACTION_SEND`, the CSV in `EXTRA_TEXT`, or a file in `EXTRA_STREAM`). It reads the contract `name,amount_minor,currency,cycle,next_due` (KS-Suite [cross-repo](https://github.com/kumasumit/ks-suite/blob/main/specs/cross-repo.md)) and shows the rows with check boxes, already-added ones unticked, and one category for them all (Bills by default). Each ticked row becomes a recurring expense named after the subscription, starting on its next date (moved forward to today or later). Rows that cannot be read are counted and skipped.
+- **Backup** format version 4 adds `recurring`; older files still restore.
+
 ## Roadmap
 
 | Stage | Version | Holds |
@@ -109,10 +116,10 @@ All from the version catalog; only the artifacts used.
 | 1, minimal first version (built and tested on `dev`, 2026-11-24) | `v0.1.0` | Gradle build, quick add, categories, month view with totals and category bars, edit and delete, CSV export, backup and restore, English and Hindi, Settings with App updates, release workflow |
 | 2 (built 2026-11-26) | `android-v0.2.0` | Budgets, search and filters |
 | 2, second part (built 2026-11-26) | `android-v0.3.0` | Other currencies |
-| 3 | `android-v0.4.0` | Recurring expenses, subscriptions from ks-tv-launcher |
+| 3 (built 2026-11-26) | `android-v0.4.0` | Recurring expenses, subscriptions from ks-tv-launcher |
 | 1.0 | `android-v1.0.0` | After the owner has used it on a real phone; Google Play readiness is planned separately |
 
-Each feature or fix is built and tested on `dev` (emulator and the release rehearsal) and released with the next `android-v` tag, with no approval asked before the tag ([Build, test, release, no waiting](https://github.com/kumasumit/KS-Suite/blob/main/specs/release-cycle.md)): a feature raises MINOR, a fix raises PATCH, and nothing is committed or released while a test fails. The owner's hand checks on a real phone come later, never block a release, and what they find goes into the next version. Before the first release, the repository's four signing secrets must exist first ([signing first](https://github.com/kumasumit/KS-Suite/blob/main/specs/versioning-signing.md#a-new-repository-signing-first)), and a rehearsal run must pass.
+Each feature or fix is built and tested on `dev` (emulator and the release rehearsal) and released with the next `android-v` tag, with no approval asked before the tag ([Build, test, release, no waiting](https://github.com/kumasumit/ks-suite/blob/main/specs/release-cycle.md)): a feature raises MINOR, a fix raises PATCH, and nothing is committed or released while a test fails. The owner's hand checks on a real phone come later, never block a release, and what they find goes into the next version. Before the first release, the repository's four signing secrets must exist first ([signing first](https://github.com/kumasumit/ks-suite/blob/main/specs/versioning-signing.md#a-new-repository-signing-first)), and a rehearsal run must pass.
 
 ## Owner decisions
 

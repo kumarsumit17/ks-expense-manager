@@ -10,7 +10,7 @@ status: approved
 
 **Status: approved** by the owner on 2026-11-25, with the recommended choice for each decision in section 3: keep AppCompat, hide the app in Recents, a baseline profile only if cold start misses its target, plain `vX.Y.Z` tags (decision 4 later changed by the suite rule to `android-vX.Y.Z`).
 
-The suite rule ([Platform folders](https://github.com/kumasumit/KS-Suite/blob/main/specs/platform-folders.md), "Each platform build is optimized for its OS") says each platform build is its own app, tuned to its OS. KS Expense Manager has **one target, the Android phone** (`mobile/android/`). The other four folders stay empty: a TV interface is unusable for typing amounts, and macOS, Windows and iOS are not targets (adding one is the owner's decision and would start its own section here). So this plan is about one build, made as good as it can be on Android phones. It sits next to the feature roadmap in the [Build plan](plan.md), which it does not change.
+The suite rule ([Platform folders](https://github.com/kumasumit/ks-suite/blob/main/specs/platform-folders.md), "Each platform build is optimized for its OS") says each platform build is its own app, tuned to its OS. KS Expense Manager has **one target, the Android phone** (`mobile/android/`). The other four folders stay empty: a TV interface is unusable for typing amounts, and macOS, Windows and iOS are not targets (adding one is the owner's decision and would start its own section here). So this plan is about one build, made as good as it can be on Android phones. It sits next to the feature roadmap in the [Build plan](plan.md), which it does not change.
 
 ## 1. Audit: the Android phone build today (stage 1, 2026-11-25)
 
@@ -98,4 +98,4 @@ Each step is one or more commits on `dev`, tested before the next. Nothing is pu
 - **Recents**: on Android 13+ the stored thumbnail is blank (checked). On Android 8–12 a cover is drawn while the app is paused (not run: no emulator below API 36 here). Opening Recents straight from the app still shows the live screen on every version, because Android keeps the app resumed during that animation; only `FLAG_SECURE` would hide it, and that would also block the user's own screenshots, so it is not used.
 - **Not done here**: a TalkBack session by ear (the emulator image has no TalkBack; the accessibility tree was checked instead), predictive back by hand, landscape by hand.
 
-A real phone check by the owner follows each release ([Release cycle](https://github.com/kumasumit/KS-Suite/blob/main/specs/release-cycle.md), step 5).
+A real phone check by the owner follows each release ([Release cycle](https://github.com/kumasumit/ks-suite/blob/main/specs/release-cycle.md), step 5).

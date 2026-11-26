@@ -65,7 +65,10 @@ import com.ks.expense.data.ExpenseStore
 import com.ks.expense.transactions.Currencies
 import com.ks.expense.ui.CurrencyPicker
 import com.ks.expense.ui.appLocale
+import com.ks.expense.recurring.RecurringDialog
+import com.ks.expense.recurring.ruleSummary
 import com.ks.expense.ui.categoryLabel
+import com.ks.expense.ui.money
 import com.ks.utility.appupdate.AppUpdate
 import com.ks.utility.appupdate.GitHubRepo
 import kotlinx.coroutines.launch
@@ -95,6 +98,8 @@ fun SettingsScreen(store: ExpenseStore, onBack: () -> Unit) {
     var pendingRestore by remember { mutableStateOf<BackupData?>(null) }
     val defaultCurrency by store.settings.defaultCurrency.collectAsState()
     var pickingCurrency by rememberSaveable { mutableStateOf(false) }
+    val rules by remember { store.dao.recurringRules() }.collectAsState(initial = emptyList())
+    var editingRule by rememberSaveable { mutableStateOf<Long?>(null) }
 
     fun report(block: suspend () -> String) {
         scope.launch {
@@ -185,6 +190,21 @@ fun SettingsScreen(store: ExpenseStore, onBack: () -> Unit) {
                 }
             }
 
+            item { Section(stringResource(R.string.recurring_title)) }
+            if (rules.isEmpty()) {
+                item { Column(Modifier.padding(horizontal = 16.dp)) { Hint(stringResource(R.string.recurring_empty)) } }
+            }
+            items(rules, key = { "r${it.id}" }) { rule ->
+                val category = categories.firstOrNull { it.id == rule.categoryId }
+                ListItem(
+                    modifier = Modifier.clickable { editingRule = rule.id }.padding(horizontal = 8.dp),
+                    leadingContent = { Text(category?.icon ?: "", style = MaterialTheme.typography.titleLarge, modifier = Modifier.clearAndSetSemantics {}) },
+                    headlineContent = { Text(rule.note.ifBlank { category?.let { categoryLabel(it) } ?: "" }) },
+                    supportingContent = { Text(ruleSummary(rule)) },
+                    trailingContent = { Text(money(rule.amountMinor, rule.currency)) },
+                )
+            }
+
             item { Section(stringResource(R.string.data_title)) }
             item {
                 DataAction(stringResource(R.string.data_export), stringResource(R.string.data_export_hint)) {
@@ -223,6 +243,22 @@ fun SettingsScreen(store: ExpenseStore, onBack: () -> Unit) {
                 }
             }
         }
+    }
+
+    editingRule?.let { id -> rules.firstOrNull { it.id == id } }?.let { rule ->
+        RecurringDialog(
+            rule = rule,
+            categories = categories,
+            onSave = {
+                scope.launch { store.dao.updateRule(it) }
+                editingRule = null
+            },
+            onDelete = {
+                scope.launch { store.dao.deleteRule(it) }
+                editingRule = null
+            },
+            onDismiss = { editingRule = null },
+        )
     }
 
     if (pickingCurrency) {

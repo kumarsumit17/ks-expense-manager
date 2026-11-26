@@ -1,6 +1,7 @@
 package com.ks.expense.settings
 
 import android.content.Context
+import androidx.core.content.edit
 import com.ks.expense.transactions.Currencies
 import com.ks.expense.transactions.Money
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +24,7 @@ class AppSettings(context: Context) {
 
     fun setDefaultCurrency(code: String) {
         require(Currencies.isValid(code)) { "not a currency: $code" }
-        prefs.edit().putString(KEY_CURRENCY, code).apply()
+        prefs.edit { putString(KEY_CURRENCY, code) }
         currency.value = code
     }
 

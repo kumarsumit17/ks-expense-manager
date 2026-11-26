@@ -265,7 +265,7 @@ fun SearchScreen(store: ExpenseStore, onBack: () -> Unit) {
         ExpenseSheet(
             existing = editing,
             categories = categories,
-            onSave = { expense ->
+            onSave = { expense, _ ->
                 scope.launch { store.dao.update(expense) }
                 editingId = null
             },

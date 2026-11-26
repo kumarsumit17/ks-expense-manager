@@ -6,6 +6,7 @@ import com.ks.expense.backup.BackupJson
 import com.ks.expense.data.Budget
 import com.ks.expense.data.Category
 import com.ks.expense.data.Expense
+import com.ks.expense.data.RecurringRule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -22,6 +23,7 @@ class BackupJsonTest {
         ),
         listOf(Budget(1, null, 1_000_000, "INR"), Budget(2, 2, 50_000, "INR")),
         "USD",
+        listOf(RecurringRule(1, 1_500_000, "INR", 1, "Rent", "monthly", 31, 20_500, false, 9)),
     )
 
     @Test fun roundTrip() {
@@ -29,11 +31,12 @@ class BackupJsonTest {
     }
 
     @Test fun readsVersion1FilesWithoutBudgets() {
-        val v1 = BackupJson.write(data.copy(budgets = emptyList(), defaultCurrency = null), 123)
-            .replace("\"version\": 3", "\"version\": 1")
+        val v1 = BackupJson.write(data.copy(budgets = emptyList(), defaultCurrency = null, rules = emptyList()), 123)
+            .replace("\"version\": 4", "\"version\": 1")
+            .replace(Regex(",\\s*\"recurring\": \\[\\s*]"), "")
             .replace(Regex(",\\s*\"budgets\": \\[\\s*]"), "")
             .replace(Regex(",\\s*\"settings\": \\{[^}]*\\}"), "")
-        assertEquals(data.copy(budgets = emptyList(), defaultCurrency = null), BackupJson.read(v1))
+        assertEquals(data.copy(budgets = emptyList(), defaultCurrency = null, rules = emptyList()), BackupJson.read(v1))
     }
 
     @Test fun refusesOtherFilesAndNewerVersions() {
@@ -44,7 +47,8 @@ class BackupJsonTest {
             "{}",
             "[]",
             good.replace("\"ks-expense-backup\"", "\"something-else\""),
-            good.replace("\"version\": 3", "\"version\": 4"),
+            good.replace("\"version\": 4", "\"version\": 5"),
+            good.replace("\"cycle\": \"monthly\"", "\"cycle\": \"daily\""),
             good.replace("\"defaultCurrency\": \"USD\"", "\"defaultCurrency\": \"XAU\""),
             good.replace("\"amountMinor\": 25000", "\"amountMinor\": 250.5"),
             good.replace("\"amountMinor\": 25000", "\"amountMinor\": \"25000\""),

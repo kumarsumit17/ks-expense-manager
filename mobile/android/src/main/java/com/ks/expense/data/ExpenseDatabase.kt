@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * The app's database. Every schema change raises [version], exports the new schema to
  * `mobile/android/schemas/` and adds a [Migration] to [MIGRATIONS] with a migration test.
  */
-@Database(entities = [Expense::class, Category::class, Budget::class], version = 2, exportSchema = true)
+@Database(entities = [Expense::class, Category::class, Budget::class, RecurringRule::class], version = 3, exportSchema = true)
 abstract class ExpenseDatabase : RoomDatabase() {
     abstract fun dao(): ExpenseDao
 
@@ -30,8 +30,22 @@ abstract class ExpenseDatabase : RoomDatabase() {
             }
         }
 
+        /** Version 3 (stage 3): recurring expenses. */
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `recurring_rule` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`amount_minor` INTEGER NOT NULL, `currency` TEXT NOT NULL, `category_id` INTEGER NOT NULL, " +
+                        "`note` TEXT NOT NULL, `cycle` TEXT NOT NULL, `anchor_day` INTEGER NOT NULL, `next_due` INTEGER NOT NULL, " +
+                        "`active` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, " +
+                        "FOREIGN KEY(`category_id`) REFERENCES `category`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_recurring_rule_category_id` ON `recurring_rule` (`category_id`)")
+            }
+        }
+
         /** Migrations from each older version, in order. */
-        val MIGRATIONS: Array<Migration> = arrayOf(MIGRATION_1_2)
+        val MIGRATIONS: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3)
 
         /** [name] null opens an in-memory database (tests). */
         fun build(context: Context, name: String? = NAME): ExpenseDatabase {

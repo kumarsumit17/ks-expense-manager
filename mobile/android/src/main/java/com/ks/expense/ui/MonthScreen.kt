@@ -30,6 +30,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -44,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -82,6 +85,8 @@ fun MonthScreen(
     openAdd: Boolean = false,
     onAddOpened: () -> Unit = {},
     onSearch: () -> Unit = {},
+    recurringAdded: Int = 0,
+    onRecurringShown: () -> Unit = {},
     onSettings: () -> Unit,
 ) {
     val zone = ZoneId.systemDefault()
@@ -112,7 +117,17 @@ fun MonthScreen(
         }
     }
 
+    val snackbar = remember { SnackbarHostState() }
+    val resources = LocalResources.current
+    LaunchedEffect(recurringAdded) {
+        if (recurringAdded > 0) {
+            onRecurringShown()
+            snackbar.showSnackbar(resources.getQuantityString(R.plurals.recurring_added, recurringAdded, recurringAdded))
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
@@ -187,8 +202,10 @@ fun MonthScreen(
             existing = editing,
             categories = categories,
             defaultCurrency = defaultCurrency,
-            onSave = { expense ->
-                scope.launch { if (expense.id == 0L) store.dao.insert(expense) else store.dao.update(expense) }
+            onSave = { expense, repeat ->
+                scope.launch {
+                    if (expense.id == 0L) store.addExpense(expense, repeat, zone) else store.dao.update(expense)
+                }
                 adding = false
                 editingId = null
             },

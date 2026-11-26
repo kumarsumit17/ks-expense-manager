@@ -71,5 +71,34 @@
   "expense.currency": "करेंसी: {code}",
   "expense.currencyTitle": "इस खर्च की करेंसी",
   "settings.currency": "डिफ़ॉल्ट करेंसी",
-  "settings.currencyHint": "नए खर्च और बजट इसी में शुरू होते हैं। कुल राशि हर करेंसी में अलग दिखती है; कुछ भी बदला नहीं जाता।"
+  "settings.currencyHint": "नए खर्च और बजट इसी में शुरू होते हैं। कुल राशि हर करेंसी में अलग दिखती है; कुछ भी बदला नहीं जाता।",
+  "recurring.title": "दोहराए जाने वाले खर्च",
+  "recurring.repeat": "दोहराएं: {cycle}",
+  "recurring.none": "कभी नहीं",
+  "recurring.weekly": "हर हफ़्ते",
+  "recurring.monthly": "हर महीने",
+  "recurring.yearly": "हर साल",
+  "recurring.next": "अगली बार: {date}",
+  "recurring.paused": "रुका हुआ",
+  "recurring.active": "अपने-आप जोड़ें",
+  "recurring.edit": "दोहराया जाने वाला खर्च",
+  "recurring.empty": "अभी कोई नहीं। खर्च जोड़ते समय दोहराएं चुनें, या KS TV Launcher से सब्सक्रिप्शन शेयर करें।",
+  "recurring.added": {
+    "one": "{count} दोहराया जाने वाला खर्च जोड़ा गया।",
+    "other": "{count} दोहराए जाने वाले खर्च जोड़े गए।"
+  },
+  "recurring.deleteTitle": "यह दोहराया जाने वाला खर्च डिलीट करें?",
+  "recurring.deleteHint": "इससे पहले जुड़े खर्च बने रहेंगे।",
+  "import.title": "KS TV Launcher से सब्सक्रिप्शन",
+  "import.category": "इनकी कैटेगरी",
+  "import.none": "इस शेयर में ऐसे सब्सक्रिप्शन नहीं हैं जिन्हें यह ऐप पढ़ सके।",
+  "import.duplicate": "पहले से जुड़ा",
+  "import.skipped": {
+    "one": "{count} पंक्ति पढ़ी नहीं जा सकी।",
+    "other": "{count} पंक्तियां पढ़ी नहीं जा सकीं।"
+  },
+  "import.button": {
+    "one": "{count} जोड़ें",
+    "other": "{count} जोड़ें"
+  }
 }

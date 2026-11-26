@@ -11,14 +11,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.ZoneId
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
+import com.ks.expense.recurring.ImportDialog
+import com.ks.expense.recurring.SubscriptionCsv
 import com.ks.expense.settings.SettingsScreen
 import com.ks.expense.ui.KsTheme
 import com.ks.expense.ui.MonthScreen
@@ -28,6 +37,12 @@ import com.ks.expense.ui.SearchScreen
 class MainActivity : AppCompatActivity() {
     /** Set by the launcher shortcut "Add expense"; cleared once the month screen has opened the sheet. */
     private var pendingAdd by mutableStateOf(false)
+
+    /** How many recurring expenses were just added; the month screen says so once. */
+    private var recurringAdded by mutableIntStateOf(0)
+
+    /** Subscriptions shared from ks-tv-launcher, waiting for the user to pick which to add. */
+    private var pendingImport by mutableStateOf<SubscriptionCsv.Result?>(null)
 
     /**
      * Android 8 to 12: cover the content while the app is paused, so the Recents thumbnail shows no
@@ -62,8 +77,30 @@ class MainActivity : AppCompatActivity() {
                         openAdd = pendingAdd,
                         onAddOpened = { pendingAdd = false },
                         onSearch = { screen = Screen.SEARCH },
+                        recurringAdded = recurringAdded,
+                        onRecurringShown = { recurringAdded = 0 },
                         onSettings = { screen = Screen.SETTINGS },
                     )
+                }
+                pendingImport?.let { result ->
+                    val categories by remember { store.dao.categories() }.collectAsState(initial = emptyList())
+                    val rules by remember { store.dao.recurringRules() }.collectAsState(initial = emptyList())
+                    if (categories.isNotEmpty()) {
+                        ImportDialog(
+                            result = result,
+                            existing = rules,
+                            categories = categories,
+                            onImport = { rows, categoryId ->
+                                pendingImport = null
+                                lifecycleScope.launch {
+                                    val zone = ZoneId.systemDefault()
+                                    store.importSubscriptions(rows, categoryId, LocalDate.now(zone))
+                                    applyDue()
+                                }
+                            },
+                            onDismiss = { pendingImport = null },
+                        )
+                    }
                 }
                 if (covered) Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
             }
@@ -83,9 +120,26 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         covered = false
+        lifecycleScope.launch { applyDue() }
+    }
+
+    /** Adds the recurring expenses that are due, when the app opens or comes back. No background work. */
+    private suspend fun applyDue() {
+        val zone = ZoneId.systemDefault()
+        val added = (application as ExpenseApp).store.dao.applyDueRules(LocalDate.now(zone), zone, System.currentTimeMillis())
+        if (added > 0) recurringAdded += added
     }
 
     private fun handle(intent: Intent?) {
+        if (intent?.action == Intent.ACTION_SEND) {
+            val text = intent.getStringExtra(Intent.EXTRA_TEXT)
+            val stream = androidx.core.content.IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, android.net.Uri::class.java)
+            lifecycleScope.launch {
+                val csv = text ?: stream?.let { (application as ExpenseApp).store.readSharedText(it) }
+                pendingImport = csv?.let { SubscriptionCsv.read(it) } ?: SubscriptionCsv.Result(emptyList(), 0)
+            }
+            return
+        }
         if (intent?.action == ACTION_ADD_EXPENSE) {
             pendingAdd = true
             ShortcutManagerCompat.reportShortcutUsed(this, "add_expense")

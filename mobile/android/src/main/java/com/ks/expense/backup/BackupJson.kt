@@ -3,6 +3,7 @@ package com.ks.expense.backup
 import com.ks.expense.data.Budget
 import com.ks.expense.data.Category
 import com.ks.expense.data.Expense
+import com.ks.expense.data.RecurringRule
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -10,8 +11,8 @@ import org.json.JSONObject
 /** The backup file: JSON written and read with Android's built-in org.json. */
 object BackupJson {
     const val FORMAT = "ks-expense-backup"
-    /** 2 added budgets, 3 the default currency; older files still read. */
-    const val VERSION = 3
+    /** 2 added budgets, 3 the default currency, 4 recurring expenses; older files still read. */
+    const val VERSION = 4
 
     fun write(data: BackupData, createdAt: Long): String {
         val categories = JSONArray()
@@ -49,6 +50,22 @@ object BackupJson {
                     .put("currency", it.currency),
             )
         }
+        val rules = JSONArray()
+        data.rules.forEach {
+            rules.put(
+                JSONObject()
+                    .put("id", it.id)
+                    .put("amountMinor", it.amountMinor)
+                    .put("currency", it.currency)
+                    .put("categoryId", it.categoryId)
+                    .put("note", it.note)
+                    .put("cycle", it.cycle)
+                    .put("anchorDay", it.anchorDay)
+                    .put("nextDue", it.nextDue)
+                    .put("active", it.active)
+                    .put("createdAt", it.createdAt),
+            )
+        }
         return JSONObject()
             .put("format", FORMAT)
             .put("version", VERSION)
@@ -56,6 +73,7 @@ object BackupJson {
             .put("categories", categories)
             .put("expenses", expenses)
             .put("budgets", budgets)
+            .put("recurring", rules)
             .put("settings", JSONObject().put("defaultCurrency", data.defaultCurrency ?: JSONObject.NULL))
             .toString(1)
     }
@@ -100,7 +118,25 @@ object BackupJson {
                 emptyList()
             }
             val defaultCurrency = root.optJSONObject("settings")?.let { if (it.isNull("defaultCurrency")) null else it.getString("defaultCurrency") }
-            BackupData(categories, expenses, budgets, defaultCurrency).takeIf { it.isValid() }
+            val rules = if (root.has("recurring")) {
+                root.getJSONArray("recurring").objects().map {
+                    RecurringRule(
+                        id = it.strictLong("id"),
+                        amountMinor = it.strictLong("amountMinor"),
+                        currency = it.getString("currency"),
+                        categoryId = it.strictLong("categoryId"),
+                        note = it.getString("note"),
+                        cycle = it.getString("cycle"),
+                        anchorDay = it.strictLong("anchorDay").toInt(),
+                        nextDue = it.strictLong("nextDue"),
+                        active = it.getBoolean("active"),
+                        createdAt = it.strictLong("createdAt"),
+                    )
+                }
+            } else {
+                emptyList()
+            }
+            BackupData(categories, expenses, budgets, defaultCurrency, rules).takeIf { it.isValid() }
         }
     } catch (_: JSONException) {
         null

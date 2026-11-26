@@ -6,7 +6,12 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.ks.expense.recurring.Cycle
+import com.ks.expense.recurring.Recurrence
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 
 @Dao
 abstract class ExpenseDao {
@@ -91,6 +96,59 @@ abstract class ExpenseDao {
         if (amountMinor != null) insertBudget(Budget(categoryId = categoryId, amountMinor = amountMinor, currency = currency))
     }
 
+    @Query("SELECT * FROM recurring_rule ORDER BY next_due, id")
+    abstract fun recurringRules(): Flow<List<RecurringRule>>
+
+    @Query("SELECT * FROM recurring_rule ORDER BY id")
+    abstract suspend fun allRecurringRules(): List<RecurringRule>
+
+    @Insert
+    abstract suspend fun insertRule(rule: RecurringRule): Long
+
+    @Insert
+    abstract suspend fun insertRules(rules: List<RecurringRule>)
+
+    @Update
+    abstract suspend fun updateRule(rule: RecurringRule)
+
+    @Delete
+    abstract suspend fun deleteRule(rule: RecurringRule)
+
+    @Query("SELECT * FROM recurring_rule WHERE active AND next_due <= :todayEpochDay")
+    protected abstract suspend fun dueRules(todayEpochDay: Long): List<RecurringRule>
+
+    @Query("DELETE FROM recurring_rule")
+    protected abstract suspend fun deleteAllRules()
+
+    /**
+     * Adds the expenses of every active rule due on or before [today] (at noon in [zone]) and moves
+     * each rule's date on, in one transaction, so running it twice adds nothing twice. Returns how
+     * many expenses it added.
+     */
+    @Transaction
+    open suspend fun applyDueRules(today: LocalDate, zone: ZoneId, now: Long): Int {
+        var added = 0
+        for (rule in dueRules(today.toEpochDay())) {
+            val cycle = Cycle.parse(rule.cycle) ?: continue
+            val (dates, next) = Recurrence.due(LocalDate.ofEpochDay(rule.nextDue), cycle, rule.anchorDay, today)
+            dates.forEach { date ->
+                insert(
+                    Expense(
+                        amountMinor = rule.amountMinor,
+                        currency = rule.currency,
+                        categoryId = rule.categoryId,
+                        note = rule.note,
+                        occurredAt = date.atTime(LocalTime.NOON).atZone(zone).toInstant().toEpochMilli(),
+                        createdAt = now,
+                    ),
+                )
+            }
+            added += dates.size
+            updateRule(rule.copy(nextDue = next.toEpochDay()))
+        }
+        return added
+    }
+
     @Insert
     protected abstract suspend fun insertBudgets(budgets: List<Budget>)
 
@@ -111,12 +169,19 @@ abstract class ExpenseDao {
 
     /** Restore: replaces everything in one transaction, so a failure changes nothing. */
     @Transaction
-    open suspend fun replaceAll(categories: List<Category>, expenses: List<Expense>, budgets: List<Budget> = emptyList()) {
+    open suspend fun replaceAll(
+        categories: List<Category>,
+        expenses: List<Expense>,
+        budgets: List<Budget> = emptyList(),
+        rules: List<RecurringRule> = emptyList(),
+    ) {
+        deleteAllRules()
         deleteAllBudgets()
         deleteAllExpenses()
         deleteAllCategories()
         insertCategories(categories)
         insertExpenses(expenses)
         insertBudgets(budgets)
+        insertRules(rules)
     }
 }

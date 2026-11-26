@@ -1,6 +1,6 @@
 # KS Expense Manager
 
-> Part of the [KS-Suite](https://github.com/kumasumit/KS-Suite).
+> Part of the [KS-Suite](https://github.com/kumasumit/ks-suite).
 
 A minimalist, privacy-first personal finance and expense tracker. All data stays on the device.
 
@@ -22,7 +22,7 @@ What it does and the roadmap: [specs/plan.md](specs/plan.md).
 ## Release
 
 Releases are cut by pushing an annotated Android tag on `main` (`git tag -a android-v1.2.3 -m android-v1.2.3 && git push origin android-v1.2.3`).
-See the suite-level [CI/CD guide](https://github.com/kumasumit/KS-Suite#-cicd-semantic-versioning--automated-signing).
+See the suite-level [CI/CD guide](https://github.com/kumasumit/ks-suite#-cicd-semantic-versioning--automated-signing).
 
 ## License
 

@@ -1,5 +1,6 @@
 # 2026-11-26
 
+* **Update**: Stage 3: recurring expenses (schema 3 with `MIGRATION_2_3`; a Repeat chip in the add sheet; a Recurring expenses section in Settings; due ones added when the app opens) and the share target for ks-tv-launcher's subscription CSV; backup format version 4. [Build plan](plan.md) "Stage 3 design".
 * **Update**: `CLAUDE.md`: the "build, test, release, no waiting" rule and the newest-ks-utility-pin rule (owner's OK).
 * **Update**: `ks-utility` moved from `v0.12.0` to `v0.13.2` (suite rule: the newest tag before each release). No network code in its Kotlin part; language check passes.
 * **Update**: [Build plan](plan.md): releases follow the suite rule "Build, test, release, no waiting": tested work is released with the next tag without asking; hand checks never block a release.

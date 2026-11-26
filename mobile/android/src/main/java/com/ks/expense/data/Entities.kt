@@ -81,3 +81,32 @@ data class Budget(
     @ColumnInfo(name = "amount_minor") val amountMinor: Long,
     val currency: String,
 )
+
+/**
+ * A recurring expense: on [nextDue] (a local date as epoch day) an expense is added and the date
+ * moves on by [cycle] (`weekly`, `monthly`, `yearly`), keeping [anchorDay] for months.
+ */
+@Entity(
+    tableName = "recurring_rule",
+    foreignKeys = [
+        ForeignKey(
+            entity = Category::class,
+            parentColumns = ["id"],
+            childColumns = ["category_id"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
+    indices = [Index("category_id")],
+)
+data class RecurringRule(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "amount_minor") val amountMinor: Long,
+    val currency: String,
+    @ColumnInfo(name = "category_id") val categoryId: Long,
+    val note: String,
+    val cycle: String,
+    @ColumnInfo(name = "anchor_day") val anchorDay: Int,
+    @ColumnInfo(name = "next_due") val nextDue: Long,
+    val active: Boolean = true,
+    @ColumnInfo(name = "created_at") val createdAt: Long,
+)

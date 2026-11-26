@@ -71,5 +71,34 @@
   "expense.currency": "Currency: {code}",
   "expense.currencyTitle": "Currency for this expense",
   "settings.currency": "Default currency",
-  "settings.currencyHint": "New expenses and budgets start in it. Totals are shown per currency; nothing is converted."
+  "settings.currencyHint": "New expenses and budgets start in it. Totals are shown per currency; nothing is converted.",
+  "recurring.title": "Recurring expenses",
+  "recurring.repeat": "Repeat: {cycle}",
+  "recurring.none": "Never",
+  "recurring.weekly": "Every week",
+  "recurring.monthly": "Every month",
+  "recurring.yearly": "Every year",
+  "recurring.next": "Next: {date}",
+  "recurring.paused": "Paused",
+  "recurring.active": "Add automatically",
+  "recurring.edit": "Recurring expense",
+  "recurring.empty": "None yet. When you add an expense, choose Repeat, or share subscriptions from KS TV Launcher.",
+  "recurring.added": {
+    "one": "{count} recurring expense added.",
+    "other": "{count} recurring expenses added."
+  },
+  "recurring.deleteTitle": "Delete this recurring expense?",
+  "recurring.deleteHint": "Expenses it already added stay.",
+  "import.title": "Subscriptions from KS TV Launcher",
+  "import.category": "Category for these",
+  "import.none": "This share has no subscriptions this app can read.",
+  "import.duplicate": "already added",
+  "import.skipped": {
+    "one": "{count} row could not be read.",
+    "other": "{count} rows could not be read."
+  },
+  "import.button": {
+    "one": "Add {count}",
+    "other": "Add {count}"
+  }
 }

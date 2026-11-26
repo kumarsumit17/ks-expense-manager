@@ -5,11 +5,15 @@ import android.net.Uri
 import com.ks.expense.backup.BackupData
 import com.ks.expense.backup.BackupJson
 import com.ks.expense.backup.Csv
+import com.ks.expense.recurring.Cycle
+import com.ks.expense.recurring.Recurrence
+import com.ks.expense.recurring.SubscriptionCsv
 import com.ks.expense.reports.Months
 import com.ks.expense.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.time.LocalDate
 import java.time.ZoneId
 
 /** The database plus the file work (export, backup, restore) through the Storage Access Framework. */
@@ -36,7 +40,7 @@ class ExpenseStore(private val context: Context, val database: ExpenseDatabase, 
 
     /** Writes the backup file to [uri]; returns how many expenses it holds. */
     suspend fun backup(uri: Uri): Int {
-        val data = BackupData(dao.allCategories(), dao.allExpenses(), dao.allBudgets(), settings.defaultCurrency.value)
+        val data = BackupData(dao.allCategories(), dao.allExpenses(), dao.allBudgets(), settings.defaultCurrency.value, dao.allRecurringRules())
         writeText(uri, BackupJson.write(data, System.currentTimeMillis()))
         return data.expenses.size
     }
@@ -56,8 +60,63 @@ class ExpenseStore(private val context: Context, val database: ExpenseDatabase, 
         }
     }
 
+    /** Adds a new expense; with [repeat], also a recurring rule whose next date is one cycle later. */
+    suspend fun addExpense(expense: Expense, repeat: Cycle?, zone: ZoneId) {
+        dao.insert(expense)
+        if (repeat != null) {
+            val date = Months.localDate(expense.occurredAt, zone)
+            dao.insertRule(
+                RecurringRule(
+                    amountMinor = expense.amountMinor,
+                    currency = expense.currency,
+                    categoryId = expense.categoryId,
+                    note = expense.note,
+                    cycle = repeat.key,
+                    anchorDay = date.dayOfMonth,
+                    nextDue = Recurrence.next(date, repeat, date.dayOfMonth).toEpochDay(),
+                    createdAt = System.currentTimeMillis(),
+                ),
+            )
+        }
+    }
+
+    /** Recurring rules from ks-tv-launcher's subscriptions, each starting on its next date (never in the past). */
+    suspend fun importSubscriptions(rows: List<SubscriptionCsv.Row>, categoryId: Long, today: LocalDate): Int {
+        val now = System.currentTimeMillis()
+        rows.forEach { row ->
+            val anchor = row.nextDue.dayOfMonth
+            dao.insertRule(
+                RecurringRule(
+                    amountMinor = row.amountMinor,
+                    currency = row.currency,
+                    categoryId = categoryId,
+                    note = row.name,
+                    cycle = row.cycle.key,
+                    anchorDay = anchor,
+                    nextDue = Recurrence.rollForward(row.nextDue, row.cycle, anchor, today).toEpochDay(),
+                    createdAt = now,
+                ),
+            )
+        }
+        return rows.size
+    }
+
+    /** Reads a shared CSV file (when the share has no text); null when it cannot be read or is too large. */
+    suspend fun readSharedText(uri: Uri): String? = withContext(Dispatchers.IO) {
+        try {
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                val bytes = input.readNBytesCompat(SubscriptionCsv.MAX_CHARS * 4 + 1)
+                if (bytes.size > SubscriptionCsv.MAX_CHARS * 4) null else bytes.toString(Charsets.UTF_8)
+            }
+        } catch (_: IOException) {
+            null
+        } catch (_: SecurityException) {
+            null
+        }
+    }
+
     suspend fun restore(data: BackupData) {
-        dao.replaceAll(data.categories, data.expenses, data.budgets)
+        dao.replaceAll(data.categories, data.expenses, data.budgets, data.rules)
         data.defaultCurrency?.let { settings.setDefaultCurrency(it) }
     }
 

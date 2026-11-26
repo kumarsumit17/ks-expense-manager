@@ -1,6 +1,7 @@
 package com.ks.expense.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -17,6 +18,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -48,6 +51,8 @@ import androidx.compose.ui.unit.dp
 import com.ks.expense.R
 import com.ks.expense.data.Category
 import com.ks.expense.data.Expense
+import com.ks.expense.recurring.Cycle
+import com.ks.expense.recurring.cycleLabel
 import com.ks.expense.reports.Months
 import com.ks.expense.transactions.Money
 import java.time.Instant
@@ -68,7 +73,8 @@ fun ExpenseSheet(
     existing: Expense?,
     categories: List<Category>,
     defaultCurrency: String = Money.DEFAULT_CURRENCY,
-    onSave: (Expense) -> Unit,
+    /** The expense, and how often it repeats (only for a new expense; null: it does not). */
+    onSave: (Expense, Cycle?) -> Unit,
     onDelete: (Expense) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -76,6 +82,8 @@ fun ExpenseSheet(
     val key = existing?.id ?: 0L
     var currency by rememberSaveable(key) { mutableStateOf(existing?.currency ?: defaultCurrency) }
     var pickingCurrency by rememberSaveable { mutableStateOf(false) }
+    var repeat by rememberSaveable(key) { mutableStateOf<Cycle?>(null) }
+    var choosingRepeat by rememberSaveable { mutableStateOf(false) }
     var amountText by rememberSaveable(key) { mutableStateOf(existing?.let { Money.toInput(it.amountMinor, it.currency) } ?: "") }
     var categoryId by rememberSaveable(key) { mutableStateOf(existing?.categoryId) }
     var note by rememberSaveable(key) { mutableStateOf(existing?.note ?: "") }
@@ -126,6 +134,7 @@ fun ExpenseSheet(
                                 occurredAt = occurredAt,
                                 createdAt = existing?.createdAt ?: now,
                             ),
+                            repeat,
                         )
                     },
                 ) { Text(stringResource(R.string.common_save)) }
@@ -172,6 +181,22 @@ fun ExpenseSheet(
                     onClick = { pickingCurrency = true },
                     label = { Text(stringResource(R.string.expense_currency, currency)) },
                 )
+                if (existing == null) {
+                    Box {
+                        AssistChip(
+                            onClick = { choosingRepeat = true },
+                            label = { Text(stringResource(R.string.recurring_repeat, cycleLabel(repeat))) },
+                        )
+                        DropdownMenu(expanded = choosingRepeat, onDismissRequest = { choosingRepeat = false }) {
+                            (listOf<Cycle?>(null) + Cycle.entries).forEach { c ->
+                                DropdownMenuItem(text = { Text(cycleLabel(c)) }, onClick = {
+                                    repeat = c
+                                    choosingRepeat = false
+                                })
+                            }
+                        }
+                    }
+                }
                 AssistChip(
                     onClick = { pickingDate = true },
                     label = {
