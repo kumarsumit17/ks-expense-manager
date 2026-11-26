@@ -1,5 +1,6 @@
 # 2026-11-26
 
+* **Update**: `ks-utility` moved from `v0.12.0` to `v0.13.2` (suite rule: the newest tag before each release). No network code in its Kotlin part; language check passes.
 * **Update**: [Build plan](plan.md): releases follow the suite rule "Build, test, release, no waiting": tested work is released with the next tag without asking; hand checks never block a release.
 * **Update**: `ks-utility` moved from `v0.10.0` to `v0.12.0` (the owner's approved Hindi terms). Hindi texts follow them: राशि (amount), यातायात, खरीदारी, स्वास्थ्य, "बजट से ज़्यादा". No network code in ks-utility's Kotlin part.
 * **Update**: Stage 2, second part: other currencies. Default currency in Settings (SharedPreferences, no new library; DataStore dropped from the plan), a Currency chip in the add sheet, totals per currency with the default first, backup format version 3 with the setting. [Build plan](plan.md) "Stage 2 design".
