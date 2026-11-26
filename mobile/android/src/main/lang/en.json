@@ -46,5 +46,26 @@
     "one": "Restored {count} expense.",
     "other": "Restored {count} expenses."
   },
-  "data.badBackup": "This file is not a KS Expense Manager backup, or it is damaged. Nothing was changed."
+  "data.badBackup": "This file is not a KS Expense Manager backup, or it is damaged. Nothing was changed.",
+  "month.categoryBudget": "{name}, {spent} of {limit}, {percent}%",
+  "budget.title": "Monthly budget",
+  "budget.forCategory": "Monthly budget for {name}",
+  "budget.limit": "Limit",
+  "budget.hint": "The same limit for every month.",
+  "budget.set": "Set a monthly budget",
+  "budget.of": "of {limit}",
+  "budget.spentOf": "{spent} of {limit}",
+  "budget.left": "{amount} left",
+  "budget.over": "{amount} over",
+  "search.hint": "Search notes, amounts, categories",
+  "search.start": "Type to search all months, or pick a category or dates.",
+  "search.noResults": "Nothing found.",
+  "search.results": {
+    "one": "{count} result",
+    "other": "{count} results"
+  },
+  "search.limited": "Showing the newest {count}.",
+  "filter.dates": "Dates",
+  "filter.dateRange": "{from} – {to}",
+  "filter.clear": "Clear filters"
 }

@@ -58,3 +58,26 @@ object DefaultCategories {
     /** Icons offered for a new category. */
     val icons = listOf("🍛", "☕", "🚌", "🛍️", "🧾", "💊", "🎬", "📦", "🏠", "⛽", "📚", "🎁", "✈️", "👕", "📱", "🐾", "💡")
 }
+
+/**
+ * A standing monthly limit: for one category, or for the whole month when [categoryId] is null.
+ * Compared only with expenses in the same [currency]. At most one per category and one overall.
+ */
+@Entity(
+    tableName = "budget",
+    foreignKeys = [
+        ForeignKey(
+            entity = Category::class,
+            parentColumns = ["id"],
+            childColumns = ["category_id"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
+    indices = [Index(value = ["category_id"], unique = true)],
+)
+data class Budget(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "category_id") val categoryId: Long?,
+    @ColumnInfo(name = "amount_minor") val amountMinor: Long,
+    val currency: String,
+)

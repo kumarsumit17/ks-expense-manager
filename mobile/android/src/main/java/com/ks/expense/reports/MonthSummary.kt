@@ -39,9 +39,7 @@ object Months {
      */
     fun summarize(month: YearMonth, expenses: List<Expense>, zone: ZoneId): MonthSummary {
         val sorted = expenses.sortedWith(compareByDescending<Expense> { it.occurredAt }.thenByDescending { it.id })
-        val days = sorted.groupBy { localDate(it.occurredAt, zone) }
-            .map { (date, list) -> DayGroup(date, list, totals(list)) }
-            .sortedByDescending { it.date }
+        val days = days(sorted, zone)
         val totals = totals(sorted)
         val byCurrency = totals.associate { it.currency to it.amountMinor }
         val categories = sorted.groupBy { it.categoryId to it.currency }
@@ -54,7 +52,15 @@ object Months {
         return MonthSummary(month, totals, categories, days, sorted.size)
     }
 
-    private fun totals(list: List<Expense>): List<Total> =
+    /** [expenses] grouped by day in [zone], newest day and newest expense first. */
+    fun days(expenses: List<Expense>, zone: ZoneId): List<DayGroup> =
+        expenses.sortedWith(compareByDescending<Expense> { it.occurredAt }.thenByDescending { it.id })
+            .groupBy { localDate(it.occurredAt, zone) }
+            .map { (date, list) -> DayGroup(date, list, totals(list)) }
+            .sortedByDescending { it.date }
+
+    /** Sums per currency, the default currency first. */
+    fun totals(list: List<Expense>): List<Total> =
         list.groupBy { it.currency }
             .map { (currency, items) -> Total(currency, sum(items)) }
             .sortedBy { currencyOrder(it.currency) }

@@ -69,6 +69,14 @@ class MonthsTest {
         assertEquals(listOf(2L, 1L), summary.days.single().expenses.map { it.id })
     }
 
+    @Test fun daysAcrossMonthsNewestFirst() {
+        val oct = expense(1, 100, at("2026-10-31T10:00"))
+        val nov = expense(2, 200, at("2026-11-01T10:00"))
+        val days = Months.days(listOf(oct, nov), ist)
+        assertEquals(listOf(LocalDate.of(2026, 11, 1), LocalDate.of(2026, 10, 31)), days.map { it.date })
+        assertEquals(listOf(Total("INR", 300)), Months.totals(listOf(oct, nov)))
+    }
+
     @Test fun emptyMonth() {
         val summary = Months.summarize(YearMonth.of(2026, 11), emptyList(), ist)
         assertEquals(0, summary.count)

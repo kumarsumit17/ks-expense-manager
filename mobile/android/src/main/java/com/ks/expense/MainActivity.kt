@@ -22,6 +22,7 @@ import androidx.core.graphics.drawable.IconCompat
 import com.ks.expense.settings.SettingsScreen
 import com.ks.expense.ui.KsTheme
 import com.ks.expense.ui.MonthScreen
+import com.ks.expense.ui.SearchScreen
 
 /** AppCompat activity: it applies the per-app language on Android 8 to 12. */
 class MainActivity : AppCompatActivity() {
@@ -45,13 +46,24 @@ class MainActivity : AppCompatActivity() {
         val store = (application as ExpenseApp).store
         setContent {
             KsTheme {
-                var settings by rememberSaveable { mutableStateOf(false) }
-                if (pendingAdd) settings = false
-                if (settings) {
-                    BackHandler { settings = false }
-                    SettingsScreen(store, onBack = { settings = false })
-                } else {
-                    MonthScreen(store, openAdd = pendingAdd, onAddOpened = { pendingAdd = false }, onSettings = { settings = true })
+                var screen by rememberSaveable { mutableStateOf(Screen.MONTH) }
+                if (pendingAdd) screen = Screen.MONTH
+                when (screen) {
+                    Screen.SETTINGS -> {
+                        BackHandler { screen = Screen.MONTH }
+                        SettingsScreen(store, onBack = { screen = Screen.MONTH })
+                    }
+                    Screen.SEARCH -> {
+                        BackHandler { screen = Screen.MONTH }
+                        SearchScreen(store, onBack = { screen = Screen.MONTH })
+                    }
+                    Screen.MONTH -> MonthScreen(
+                        store,
+                        openAdd = pendingAdd,
+                        onAddOpened = { pendingAdd = false },
+                        onSearch = { screen = Screen.SEARCH },
+                        onSettings = { screen = Screen.SETTINGS },
+                    )
                 }
                 if (covered) Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
             }
@@ -74,7 +86,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handle(intent: Intent?) {
-        if (intent?.action == ACTION_ADD_EXPENSE) pendingAdd = true
+        if (intent?.action == ACTION_ADD_EXPENSE) {
+            pendingAdd = true
+            ShortcutManagerCompat.reportShortcutUsed(this, "add_expense")
+        }
     }
 
     /** The launcher's long-press "Add expense", in the current language. */
@@ -86,6 +101,8 @@ class MainActivity : AppCompatActivity() {
             .build()
         runCatching { ShortcutManagerCompat.setDynamicShortcuts(this, listOf(shortcut)) }
     }
+
+    private enum class Screen { MONTH, SEARCH, SETTINGS }
 
     companion object {
         const val ACTION_ADD_EXPENSE = "com.ks.expense.action.ADD_EXPENSE"

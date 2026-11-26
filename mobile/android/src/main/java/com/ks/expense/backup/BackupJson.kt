@@ -1,5 +1,6 @@
 package com.ks.expense.backup
 
+import com.ks.expense.data.Budget
 import com.ks.expense.data.Category
 import com.ks.expense.data.Expense
 import org.json.JSONArray
@@ -9,7 +10,8 @@ import org.json.JSONObject
 /** The backup file: JSON written and read with Android's built-in org.json. */
 object BackupJson {
     const val FORMAT = "ks-expense-backup"
-    const val VERSION = 1
+    /** 2 from stage 2 (budgets); version 1 files still read, with no budgets. */
+    const val VERSION = 2
 
     fun write(data: BackupData, createdAt: Long): String {
         val categories = JSONArray()
@@ -37,12 +39,23 @@ object BackupJson {
                     .put("createdAt", it.createdAt),
             )
         }
+        val budgets = JSONArray()
+        data.budgets.forEach {
+            budgets.put(
+                JSONObject()
+                    .put("id", it.id)
+                    .put("categoryId", it.categoryId ?: JSONObject.NULL)
+                    .put("amountMinor", it.amountMinor)
+                    .put("currency", it.currency),
+            )
+        }
         return JSONObject()
             .put("format", FORMAT)
             .put("version", VERSION)
             .put("createdAt", createdAt)
             .put("categories", categories)
             .put("expenses", expenses)
+            .put("budgets", budgets)
             .toString(1)
     }
 
@@ -73,7 +86,19 @@ object BackupJson {
                     createdAt = it.strictLong("createdAt"),
                 )
             }
-            BackupData(categories, expenses).takeIf { it.isValid() }
+            val budgets = if (root.has("budgets")) {
+                root.getJSONArray("budgets").objects().map {
+                    Budget(
+                        id = it.strictLong("id"),
+                        categoryId = if (it.isNull("categoryId")) null else it.strictLong("categoryId"),
+                        amountMinor = it.strictLong("amountMinor"),
+                        currency = it.getString("currency"),
+                    )
+                }
+            } else {
+                emptyList()
+            }
+            BackupData(categories, expenses, budgets).takeIf { it.isValid() }
         }
     } catch (_: JSONException) {
         null

@@ -14,6 +14,12 @@ import androidx.compose.ui.platform.LocalContext
 private val Green = Color(0xFF1B6B4F)
 private val LightGreen = Color(0xFF8BD6B4)
 
+/** Budget colours: amber from 80 %, the theme's error colour over 100 %. Text always says it too. */
+object BudgetColors {
+    val nearLight = Color(0xFF9A6700)
+    val nearDark = Color(0xFFF2C14E)
+}
+
 /** Material 3 with the phone's own colours on Android 12 and later, green before that. */
 @Composable
 fun KsTheme(content: @Composable () -> Unit) {

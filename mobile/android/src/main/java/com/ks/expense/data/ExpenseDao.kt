@@ -41,6 +41,62 @@ abstract class ExpenseDao {
     @Query("SELECT COALESCE(MAX(sort), -1) FROM category")
     abstract suspend fun maxSort(): Int
 
+    /**
+     * Search across all months, newest first, at most [limit] rows. [pattern] is a LIKE pattern
+     * with `\` as escape (null: no text); [amountMinor] matches an amount exactly; [nameCategories]
+     * are categories whose shown name matches the text. Category and date filters apply on top.
+     */
+    @Query(
+        """
+        SELECT * FROM expense
+        WHERE (:pattern IS NULL OR note LIKE :pattern ESCAPE '\'
+               OR amount_minor = :amountMinor OR category_id IN (:nameCategories))
+          AND (:anyCategory OR category_id IN (:categories))
+          AND (:from IS NULL OR occurred_at >= :from)
+          AND (:to IS NULL OR occurred_at < :to)
+        ORDER BY occurred_at DESC, id DESC
+        LIMIT :limit
+        """,
+    )
+    abstract fun search(
+        pattern: String?,
+        amountMinor: Long?,
+        nameCategories: List<Long>,
+        anyCategory: Boolean,
+        categories: List<Long>,
+        from: Long?,
+        to: Long?,
+        limit: Int,
+    ): Flow<List<Expense>>
+
+    @Query("SELECT * FROM budget")
+    abstract fun budgets(): Flow<List<Budget>>
+
+    @Query("SELECT * FROM budget ORDER BY id")
+    abstract suspend fun allBudgets(): List<Budget>
+
+    @Query("DELETE FROM budget WHERE category_id IS NULL")
+    protected abstract suspend fun deleteOverallBudget()
+
+    @Query("DELETE FROM budget WHERE category_id = :categoryId")
+    protected abstract suspend fun deleteCategoryBudget(categoryId: Long)
+
+    @Insert
+    protected abstract suspend fun insertBudget(budget: Budget)
+
+    /** Sets or, with [amountMinor] null, removes the budget for [categoryId] (null: the whole month). */
+    @Transaction
+    open suspend fun setBudget(categoryId: Long?, amountMinor: Long?, currency: String) {
+        if (categoryId == null) deleteOverallBudget() else deleteCategoryBudget(categoryId)
+        if (amountMinor != null) insertBudget(Budget(categoryId = categoryId, amountMinor = amountMinor, currency = currency))
+    }
+
+    @Insert
+    protected abstract suspend fun insertBudgets(budgets: List<Budget>)
+
+    @Query("DELETE FROM budget")
+    protected abstract suspend fun deleteAllBudgets()
+
     @Insert
     protected abstract suspend fun insertCategories(categories: List<Category>)
 
@@ -55,10 +111,12 @@ abstract class ExpenseDao {
 
     /** Restore: replaces everything in one transaction, so a failure changes nothing. */
     @Transaction
-    open suspend fun replaceAll(categories: List<Category>, expenses: List<Expense>) {
+    open suspend fun replaceAll(categories: List<Category>, expenses: List<Expense>, budgets: List<Budget> = emptyList()) {
+        deleteAllBudgets()
         deleteAllExpenses()
         deleteAllCategories()
         insertCategories(categories)
         insertExpenses(expenses)
+        insertBudgets(budgets)
     }
 }

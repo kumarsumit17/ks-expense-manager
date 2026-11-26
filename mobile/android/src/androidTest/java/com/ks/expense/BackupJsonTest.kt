@@ -3,6 +3,7 @@ package com.ks.expense
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ks.expense.backup.BackupData
 import com.ks.expense.backup.BackupJson
+import com.ks.expense.data.Budget
 import com.ks.expense.data.Category
 import com.ks.expense.data.Expense
 import org.junit.Assert.assertEquals
@@ -19,10 +20,18 @@ class BackupJsonTest {
             Expense(1, 25_000, "INR", 1, "Lunch\nwith friends", 1_700_000_000_000, 1_700_000_000_001),
             Expense(2, 1_000_000_000_000_000, "USD", 2, "", 5, 6),
         ),
+        listOf(Budget(1, null, 1_000_000, "INR"), Budget(2, 2, 50_000, "INR")),
     )
 
     @Test fun roundTrip() {
         assertEquals(data, BackupJson.read(BackupJson.write(data, 123)))
+    }
+
+    @Test fun readsVersion1FilesWithoutBudgets() {
+        val v1 = BackupJson.write(data.copy(budgets = emptyList()), 123)
+            .replace("\"version\": 2", "\"version\": 1")
+            .replace(Regex(",\\s*\"budgets\": \\[\\s*]"), "")
+        assertEquals(data.copy(budgets = emptyList()), BackupJson.read(v1))
     }
 
     @Test fun refusesOtherFilesAndNewerVersions() {
@@ -33,7 +42,7 @@ class BackupJsonTest {
             "{}",
             "[]",
             good.replace("\"ks-expense-backup\"", "\"something-else\""),
-            good.replace("\"version\": 1", "\"version\": 2"),
+            good.replace("\"version\": 2", "\"version\": 3"),
             good.replace("\"amountMinor\": 25000", "\"amountMinor\": 250.5"),
             good.replace("\"amountMinor\": 25000", "\"amountMinor\": \"25000\""),
             good.replace("\"categoryId\": 2", "\"categoryId\": 3"),

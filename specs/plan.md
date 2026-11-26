@@ -96,13 +96,21 @@ All from the version catalog; only the artifacts used.
 - `lintDebug`, plus `checkNoInternet<Variant>`, which fails the build when a merged manifest asks for `INTERNET` (it runs with `check`, every `assemble` and `bundle`, and in the release workflow's tests).
 - By hand on the phone emulator, each stage: add, edit, delete, month switch, export and open the CSV, back up and restore, both languages, dark theme, a large font size.
 
+## Stage 2 design (built 2026-11-26)
+
+- **Budgets** (`budgets/`): a `budget` table (schema 2, `MIGRATION_1_2`) holds at most one limit per category and one for the whole month, each with its currency; the same limit applies to every month. No new screen: **tap the month's total** to set or remove the overall budget, **tap a category's bar** for that category. With a budget, the total shows "of ₹10,000" and "₹5,500 left" (or "₹500 over"), and the bar fills against the limit: the theme colour, amber from 80 %, red over 100 %, always with the words as well as the colour. A budgeted category with no spending yet this month still shows its bar. Expenses in another currency are not counted against a budget.
+- **Search and filters**: a search icon on the month screen opens one search screen over all months. The text matches the note (anywhere, `%` and `_` literal), an exact amount ("450", "1,23,456.50") or a category's shown name; filter chips pick categories and a date range. Results are grouped by day with the year, with their count and total per currency; the newest 500 are shown. Tapping a result edits it.
+- **Backup** format version 2 adds `budgets`; version 1 files still restore (no budgets).
+- **Other currencies** are the rest of stage 2, not built yet.
+
 ## Roadmap
 
 | Stage | Version | Holds |
 |---|---|---|
 | 1, minimal first version (built and tested on `dev`, 2026-11-24) | `v0.1.0` | Gradle build, quick add, categories, month view with totals and category bars, edit and delete, CSV export, backup and restore, English and Hindi, Settings with App updates, release workflow |
-| 2 | `android-v0.2.0` | Budgets, search and filters, other currencies |
-| 3 | `android-v0.3.0` | Recurring expenses, subscriptions from ks-tv-launcher |
+| 2 (built 2026-11-26) | `android-v0.2.0` | Budgets, search and filters |
+| 2, second part | `android-v0.3.0` | Other currencies |
+| 3 | `android-v0.4.0` | Recurring expenses, subscriptions from ks-tv-launcher |
 | 1.0 | `android-v1.0.0` | After the owner has used it on a real phone; Google Play readiness is planned separately |
 
 Each stage is built and tested on `dev`. The owner is asked before any tag; the repository's four signing secrets must exist first ([signing first](https://github.com/kumasumit/KS-Suite/blob/main/specs/versioning-signing.md#a-new-repository-signing-first)), and a rehearsal run must pass.

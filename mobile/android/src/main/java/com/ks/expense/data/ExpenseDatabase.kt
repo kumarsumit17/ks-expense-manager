@@ -11,15 +11,27 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * The app's database. Every schema change raises [version], exports the new schema to
  * `mobile/android/schemas/` and adds a [Migration] to [MIGRATIONS] with a migration test.
  */
-@Database(entities = [Expense::class, Category::class], version = 1, exportSchema = true)
+@Database(entities = [Expense::class, Category::class, Budget::class], version = 2, exportSchema = true)
 abstract class ExpenseDatabase : RoomDatabase() {
     abstract fun dao(): ExpenseDao
 
     companion object {
         const val NAME = "expenses.db"
 
-        /** Migrations from each older version; none yet (version 1 is the first). */
-        val MIGRATIONS: Array<Migration> = arrayOf()
+        /** Version 2 (stage 2): monthly budgets. */
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `budget` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`category_id` INTEGER, `amount_minor` INTEGER NOT NULL, `currency` TEXT NOT NULL, " +
+                        "FOREIGN KEY(`category_id`) REFERENCES `category`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+                )
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_budget_category_id` ON `budget` (`category_id`)")
+            }
+        }
+
+        /** Migrations from each older version, in order. */
+        val MIGRATIONS: Array<Migration> = arrayOf(MIGRATION_1_2)
 
         /** [name] null opens an in-memory database (tests). */
         fun build(context: Context, name: String? = NAME): ExpenseDatabase {

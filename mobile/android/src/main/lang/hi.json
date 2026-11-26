@@ -46,5 +46,26 @@
     "one": "{count} खर्च रीस्टोर हुआ।",
     "other": "{count} खर्च रीस्टोर हुए।"
   },
-  "data.badBackup": "यह फ़ाइल KS खर्च मैनेजर का बैकअप नहीं है, या खराब है। कुछ नहीं बदला गया।"
+  "data.badBackup": "यह फ़ाइल KS खर्च मैनेजर का बैकअप नहीं है, या खराब है। कुछ नहीं बदला गया।",
+  "month.categoryBudget": "{name}, {limit} में से {spent}, {percent}%",
+  "budget.title": "महीने का बजट",
+  "budget.forCategory": "{name} का महीने का बजट",
+  "budget.limit": "लिमिट",
+  "budget.hint": "हर महीने के लिए यही लिमिट।",
+  "budget.set": "महीने का बजट तय करें",
+  "budget.of": "{limit} में से",
+  "budget.spentOf": "{limit} में से {spent}",
+  "budget.left": "{amount} बाकी",
+  "budget.over": "{amount} ज़्यादा",
+  "search.hint": "नोट, रकम, कैटेगरी खोजें",
+  "search.start": "सभी महीनों में खोजने के लिए लिखें, या कैटेगरी या तारीखें चुनें।",
+  "search.noResults": "कुछ नहीं मिला।",
+  "search.results": {
+    "one": "{count} नतीजा",
+    "other": "{count} नतीजे"
+  },
+  "search.limited": "सबसे नए {count} दिखाए जा रहे हैं।",
+  "filter.dates": "तारीखें",
+  "filter.dateRange": "{from} – {to}",
+  "filter.clear": "फ़िल्टर हटाएं"
 }

@@ -1,6 +1,7 @@
 package com.ks.expense
 
 import com.ks.expense.backup.BackupData
+import com.ks.expense.data.Budget
 import com.ks.expense.data.Category
 import com.ks.expense.data.Expense
 import org.junit.Assert.assertFalse
@@ -15,6 +16,7 @@ class BackupDataTest {
     @Test fun validData() {
         assertTrue(BackupData(listOf(food, mine), listOf(lunch)).isValid())
         assertTrue(BackupData(emptyList(), emptyList()).isValid())
+        assertTrue(BackupData(listOf(food), emptyList(), listOf(Budget(1, null, 1_000_000, "INR"), Budget(2, 1, 200_000, "INR"))).isValid())
     }
 
     @Test fun invalidData() {
@@ -29,6 +31,11 @@ class BackupDataTest {
             BackupData(listOf(food.copy(builtinKey = null)), emptyList()),
             BackupData(listOf(food.copy(icon = " ")), emptyList()),
             BackupData(listOf(food.copy(id = 0)), emptyList()),
+            BackupData(listOf(food), emptyList(), listOf(Budget(1, 9, 100, "INR"))),
+            BackupData(listOf(food), emptyList(), listOf(Budget(1, 1, 0, "INR"))),
+            BackupData(listOf(food), emptyList(), listOf(Budget(1, 1, 100, "inr"))),
+            BackupData(listOf(food), emptyList(), listOf(Budget(1, null, 100, "INR"), Budget(2, null, 200, "INR"))),
+            BackupData(listOf(food), emptyList(), listOf(Budget(1, 1, 100, "INR"), Budget(1, null, 200, "INR"))),
         ).forEach { assertFalse(it.toString(), it.isValid()) }
     }
 }

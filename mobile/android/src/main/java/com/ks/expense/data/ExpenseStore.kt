@@ -35,7 +35,7 @@ class ExpenseStore(private val context: Context, val database: ExpenseDatabase) 
 
     /** Writes the backup file to [uri]; returns how many expenses it holds. */
     suspend fun backup(uri: Uri): Int {
-        val data = BackupData(dao.allCategories(), dao.allExpenses())
+        val data = BackupData(dao.allCategories(), dao.allExpenses(), dao.allBudgets())
         writeText(uri, BackupJson.write(data, System.currentTimeMillis()))
         return data.expenses.size
     }
@@ -55,7 +55,7 @@ class ExpenseStore(private val context: Context, val database: ExpenseDatabase) 
         }
     }
 
-    suspend fun restore(data: BackupData) = dao.replaceAll(data.categories, data.expenses)
+    suspend fun restore(data: BackupData) = dao.replaceAll(data.categories, data.expenses, data.budgets)
 
     private suspend fun writeText(uri: Uri, text: String) = withContext(Dispatchers.IO) {
         val out = context.contentResolver.openOutputStream(uri, "wt") ?: throw IOException("No output stream")

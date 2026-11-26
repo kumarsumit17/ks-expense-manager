@@ -1,5 +1,6 @@
 # 2026-11-26
 
+* **Update**: Stage 2, first part: monthly budgets (overall and per category; schema 2 with `MIGRATION_1_2`) and search with category and date filters across all months; backup format version 2 with budgets. [Build plan](plan.md) "Stage 2 design". Other currencies still to come.
 * **Update**: The repository moved from the GitHub account `kumarsumit17` to `kumasumit`: release workflow (`kumasumit/ks-utility/...@v0.10.0`), submodule URL, the App updates link and every doc link changed. The old address redirects, so copies of v0.1.0 still reach the releases.
 
 # 2026-11-25
