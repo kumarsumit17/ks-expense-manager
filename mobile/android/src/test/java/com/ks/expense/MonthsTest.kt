@@ -53,6 +53,8 @@ class MonthsTest {
         )
         val summary = Months.summarize(YearMonth.of(2026, 11), list, ist)
         assertEquals(listOf(Total("INR", 50_000), Total("USD", 500)), summary.totals)
+        // With dollars as the default currency, dollars come first.
+        assertEquals(listOf("USD", "INR"), Months.summarize(YearMonth.of(2026, 11), list, ist, first = "USD").totals.map { it.currency })
         assertEquals(4, summary.count)
         val inr = summary.categories.filter { it.currency == "INR" }
         assertEquals(listOf(1L, 2L), inr.map { it.categoryId })

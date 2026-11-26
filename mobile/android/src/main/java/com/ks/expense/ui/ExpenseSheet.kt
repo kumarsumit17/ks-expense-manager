@@ -67,13 +67,15 @@ import java.time.format.FormatStyle
 fun ExpenseSheet(
     existing: Expense?,
     categories: List<Category>,
+    defaultCurrency: String = Money.DEFAULT_CURRENCY,
     onSave: (Expense) -> Unit,
     onDelete: (Expense) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val zone = ZoneId.systemDefault()
-    val currency = existing?.currency ?: Money.DEFAULT_CURRENCY
     val key = existing?.id ?: 0L
+    var currency by rememberSaveable(key) { mutableStateOf(existing?.currency ?: defaultCurrency) }
+    var pickingCurrency by rememberSaveable { mutableStateOf(false) }
     var amountText by rememberSaveable(key) { mutableStateOf(existing?.let { Money.toInput(it.amountMinor, it.currency) } ?: "") }
     var categoryId by rememberSaveable(key) { mutableStateOf(existing?.categoryId) }
     var note by rememberSaveable(key) { mutableStateOf(existing?.note ?: "") }
@@ -165,7 +167,11 @@ fun ExpenseSheet(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Row {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                AssistChip(
+                    onClick = { pickingCurrency = true },
+                    label = { Text(stringResource(R.string.expense_currency, currency)) },
+                )
                 AssistChip(
                     onClick = { pickingDate = true },
                     label = {
@@ -184,6 +190,19 @@ fun ExpenseSheet(
 
     if (existing == null) {
         LaunchedEffect(Unit) { focus.requestFocus() }
+    }
+
+    if (pickingCurrency) {
+        CurrencyPicker(
+            title = stringResource(R.string.expense_currency_title),
+            selected = currency,
+            onPick = {
+                // Keep the typed amount if it still fits the new currency's decimals.
+                currency = it
+                pickingCurrency = false
+            },
+            onDismiss = { pickingCurrency = false },
+        )
     }
 
     if (pickingDate) {

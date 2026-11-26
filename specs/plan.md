@@ -47,7 +47,7 @@ Three screens, no navigation library (one state value picks the screen):
 ## Storage
 
 - **Room** database (`expenses.db`): tables `expense` (id, amount_minor, currency, category_id, note, occurred_at epoch millis, created_at), `category` (id, name key or custom name, icon, hidden, sort), and from later stages `budget` and `recurring_rule`. Months and days are grouped in the phone's `ZoneId` at query time. Schemas are exported to `mobile/android/schemas/`; every change has a `Migration` and a migration test ([Constraints](constraints.md)). Stage 2 and 3 tables are added by migrations, not created early.
-- **DataStore** (Preferences) for settings, from stage 2 (the default currency). Stage 1 needs none: the starting categories are put in when the database is created, and AppCompat keeps the language choice.
+- **Settings**: the default currency is kept in Android's own SharedPreferences (stage 2); DataStore is not used. The starting categories are put in when the database is created, and AppCompat keeps the language choice.
 - `android:allowBackup="false"`, and no `INTERNET` permission.
 - **Backup file**: one JSON file, `ks-expense-backup-YYYY-MM-DD.json`, with a format version, written and read with Android's built-in `org.json` (no new library). Restore checks the whole file first and changes nothing if any part is wrong. The database is not encrypted; the phone's own lock and storage encryption protect it.
 - **CSV export**: `date,amount,currency,category,note` with the amount as a plain decimal (`123456.50`), UTF-8 with a byte-order mark so Excel reads Hindi text, RFC 4180 quoting. CSV is for spreadsheets; the JSON file is the backup. This changes the line in [Constraints](constraints.md) that says the CSV export is the backup (owner decision 3).
@@ -82,7 +82,6 @@ All from the version catalog; only the artifacts used.
 | AndroidX appcompat | Per-app language on Android 8 to 12 (`setApplicationLocales`) | Apache 2.0 |
 | Jetpack Compose (BOM; ui, foundation, material3) | Interface | Apache 2.0 |
 | AndroidX Room (runtime, ktx, compiler) + KSP plugin | Database, migrations, exported schemas | Apache 2.0 |
-| AndroidX DataStore Preferences | Settings (from stage 2) | Apache 2.0 |
 | Compose Material icons core | The few interface icons (+, settings, arrows) | Apache 2.0 |
 | kotlinx-serialization-core (constraint only) | Room brings it; raised to 1.8.1 because room-testing needs it and the test APK must match the app | Apache 2.0 |
 | Tests: JUnit 4, AndroidX Test (runner, ext-junit), room-testing, compose ui-test-junit4, kotlinx-coroutines-test | Unit, migration and screen tests | EPL 1.0 (JUnit 4), Apache 2.0 (the rest) |
@@ -101,7 +100,7 @@ All from the version catalog; only the artifacts used.
 - **Budgets** (`budgets/`): a `budget` table (schema 2, `MIGRATION_1_2`) holds at most one limit per category and one for the whole month, each with its currency; the same limit applies to every month. No new screen: **tap the month's total** to set or remove the overall budget, **tap a category's bar** for that category. With a budget, the total shows "of ₹10,000" and "₹5,500 left" (or "₹500 over"), and the bar fills against the limit: the theme colour, amber from 80 %, red over 100 %, always with the words as well as the colour. A budgeted category with no spending yet this month still shows its bar. Expenses in another currency are not counted against a budget.
 - **Search and filters**: a search icon on the month screen opens one search screen over all months. The text matches the note (anywhere, `%` and `_` literal), an exact amount ("450", "1,23,456.50") or a category's shown name; filter chips pick categories and a date range. Results are grouped by day with the year, with their count and total per currency; the newest 500 are shown. Tapping a result edits it.
 - **Backup** format version 2 adds `budgets`; version 1 files still restore (no budgets).
-- **Other currencies** are the rest of stage 2, not built yet.
+- **Other currencies** (built 2026-11-26, `android-v0.3.0`): Settings has **Default currency** (rupees until changed), picked from a list with common currencies first (rupee, dollar, euro, pound, dirham, riyal …) and a search field for every other ISO 4217 currency. New expenses and budgets start in it; the add sheet has a **Currency** chip to use another one for that expense, so the three-tap path is unchanged. Totals, day totals and search results are shown per currency, the default first; nothing is converted (no exchange rates offline). A budget counts only expenses in its own currency. The setting is kept in Android's own SharedPreferences (no DataStore library) and goes into the backup, format version 3.
 
 ## Roadmap
 
@@ -109,7 +108,7 @@ All from the version catalog; only the artifacts used.
 |---|---|---|
 | 1, minimal first version (built and tested on `dev`, 2026-11-24) | `v0.1.0` | Gradle build, quick add, categories, month view with totals and category bars, edit and delete, CSV export, backup and restore, English and Hindi, Settings with App updates, release workflow |
 | 2 (built 2026-11-26) | `android-v0.2.0` | Budgets, search and filters |
-| 2, second part | `android-v0.3.0` | Other currencies |
+| 2, second part (built 2026-11-26) | `android-v0.3.0` | Other currencies |
 | 3 | `android-v0.4.0` | Recurring expenses, subscriptions from ks-tv-launcher |
 | 1.0 | `android-v1.0.0` | After the owner has used it on a real phone; Google Play readiness is planned separately |
 

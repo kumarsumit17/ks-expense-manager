@@ -67,7 +67,7 @@ No new runtime dependency is needed for anything below. Items that would need on
 ### 2.6 Dependencies
 
 - **AppCompat**: used only for the per-app language on Android 8–12. Section 3, decision 1 asks whether to keep it.
-- Nothing else is added. Charts, view-models, navigation, DataStore (until stage 2 needs it) stay out, as in the [Build plan](plan.md).
+- Nothing else is added. Charts, view-models, navigation, DataStore (stage 2 used SharedPreferences instead) stay out, as in the [Build plan](plan.md).
 
 ## 3. Decisions for the owner
 

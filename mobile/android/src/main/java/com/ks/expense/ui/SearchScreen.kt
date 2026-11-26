@@ -56,7 +56,6 @@ import androidx.compose.ui.unit.dp
 import com.ks.expense.R
 import com.ks.expense.data.ExpenseStore
 import com.ks.expense.reports.Months
-import com.ks.expense.transactions.Money
 import com.ks.expense.transactions.Search
 import com.ks.expense.transactions.SearchFilter
 import kotlinx.coroutines.delay
@@ -90,6 +89,7 @@ fun SearchScreen(store: ExpenseStore, onBack: () -> Unit) {
         query = text
     }
 
+    val defaultCurrency by store.settings.defaultCurrency.collectAsState()
     val categories by remember { store.dao.categories() }.collectAsState(initial = emptyList())
     val byId = categories.associateBy { it.id }
     val filter = SearchFilter(
@@ -102,7 +102,7 @@ fun SearchScreen(store: ExpenseStore, onBack: () -> Unit) {
     val results by remember(filter, nameMatches) {
         store.dao.search(
             pattern = Search.likePattern(filter.text),
-            amountMinor = Search.amount(filter.text, Money.DEFAULT_CURRENCY),
+            amountMinor = Search.amount(filter.text, defaultCurrency),
             nameCategories = nameMatches.ifEmpty { listOf(-1L) },
             anyCategory = filter.categoryIds.isEmpty(),
             categories = filter.categoryIds.toList().ifEmpty { listOf(-1L) },
@@ -210,7 +210,7 @@ fun SearchScreen(store: ExpenseStore, onBack: () -> Unit) {
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
-                            Months.totals(list).forEach {
+                            Months.totals(list, defaultCurrency).forEach {
                                 Text(money(it.amountMinor, it.currency), style = MaterialTheme.typography.headlineSmall)
                             }
                             if (list.size >= Search.LIMIT) {
@@ -222,7 +222,7 @@ fun SearchScreen(store: ExpenseStore, onBack: () -> Unit) {
                             }
                         }
                     }
-                    Months.days(list, zone).forEach { day ->
+                    Months.days(list, zone, defaultCurrency).forEach { day ->
                         item(key = "d${day.date}") { DayHeader(day, withYear = true) }
                         items(day.expenses, key = { "e${it.id}" }) { expense ->
                             ExpenseRow(expense, byId[expense.categoryId], onClick = { editingId = expense.id })

@@ -4,10 +4,11 @@ import android.app.Application
 import android.os.StrictMode
 import com.ks.expense.data.ExpenseDatabase
 import com.ks.expense.data.ExpenseStore
+import com.ks.expense.settings.AppSettings
 import kotlin.concurrent.thread
 
 class ExpenseApp : Application() {
-    val store: ExpenseStore by lazy { ExpenseStore(this, ExpenseDatabase.build(this)) }
+    val store: ExpenseStore by lazy { ExpenseStore(this, ExpenseDatabase.build(this), AppSettings(this)) }
 
     override fun onCreate() {
         super.onCreate()

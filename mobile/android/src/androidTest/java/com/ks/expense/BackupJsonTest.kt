@@ -21,6 +21,7 @@ class BackupJsonTest {
             Expense(2, 1_000_000_000_000_000, "USD", 2, "", 5, 6),
         ),
         listOf(Budget(1, null, 1_000_000, "INR"), Budget(2, 2, 50_000, "INR")),
+        "USD",
     )
 
     @Test fun roundTrip() {
@@ -28,10 +29,11 @@ class BackupJsonTest {
     }
 
     @Test fun readsVersion1FilesWithoutBudgets() {
-        val v1 = BackupJson.write(data.copy(budgets = emptyList()), 123)
-            .replace("\"version\": 2", "\"version\": 1")
+        val v1 = BackupJson.write(data.copy(budgets = emptyList(), defaultCurrency = null), 123)
+            .replace("\"version\": 3", "\"version\": 1")
             .replace(Regex(",\\s*\"budgets\": \\[\\s*]"), "")
-        assertEquals(data.copy(budgets = emptyList()), BackupJson.read(v1))
+            .replace(Regex(",\\s*\"settings\": \\{[^}]*\\}"), "")
+        assertEquals(data.copy(budgets = emptyList(), defaultCurrency = null), BackupJson.read(v1))
     }
 
     @Test fun refusesOtherFilesAndNewerVersions() {
@@ -42,7 +44,8 @@ class BackupJsonTest {
             "{}",
             "[]",
             good.replace("\"ks-expense-backup\"", "\"something-else\""),
-            good.replace("\"version\": 2", "\"version\": 3"),
+            good.replace("\"version\": 3", "\"version\": 4"),
+            good.replace("\"defaultCurrency\": \"USD\"", "\"defaultCurrency\": \"XAU\""),
             good.replace("\"amountMinor\": 25000", "\"amountMinor\": 250.5"),
             good.replace("\"amountMinor\": 25000", "\"amountMinor\": \"25000\""),
             good.replace("\"categoryId\": 2", "\"categoryId\": 3"),

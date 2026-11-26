@@ -6,13 +6,14 @@ import com.ks.expense.backup.BackupData
 import com.ks.expense.backup.BackupJson
 import com.ks.expense.backup.Csv
 import com.ks.expense.reports.Months
+import com.ks.expense.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.time.ZoneId
 
 /** The database plus the file work (export, backup, restore) through the Storage Access Framework. */
-class ExpenseStore(private val context: Context, val database: ExpenseDatabase) {
+class ExpenseStore(private val context: Context, val database: ExpenseDatabase, val settings: AppSettings) {
     val dao: ExpenseDao get() = database.dao()
 
     /** Writes every expense as CSV to [uri]; returns how many. */
@@ -35,7 +36,7 @@ class ExpenseStore(private val context: Context, val database: ExpenseDatabase) 
 
     /** Writes the backup file to [uri]; returns how many expenses it holds. */
     suspend fun backup(uri: Uri): Int {
-        val data = BackupData(dao.allCategories(), dao.allExpenses(), dao.allBudgets())
+        val data = BackupData(dao.allCategories(), dao.allExpenses(), dao.allBudgets(), settings.defaultCurrency.value)
         writeText(uri, BackupJson.write(data, System.currentTimeMillis()))
         return data.expenses.size
     }
@@ -55,7 +56,10 @@ class ExpenseStore(private val context: Context, val database: ExpenseDatabase) 
         }
     }
 
-    suspend fun restore(data: BackupData) = dao.replaceAll(data.categories, data.expenses, data.budgets)
+    suspend fun restore(data: BackupData) {
+        dao.replaceAll(data.categories, data.expenses, data.budgets)
+        data.defaultCurrency?.let { settings.setDefaultCurrency(it) }
+    }
 
     private suspend fun writeText(uri: Uri, text: String) = withContext(Dispatchers.IO) {
         val out = context.contentResolver.openOutputStream(uri, "wt") ?: throw IOException("No output stream")

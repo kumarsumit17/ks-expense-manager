@@ -62,6 +62,9 @@ import com.ks.expense.backup.BackupData
 import com.ks.expense.data.Category
 import com.ks.expense.data.DefaultCategories
 import com.ks.expense.data.ExpenseStore
+import com.ks.expense.transactions.Currencies
+import com.ks.expense.ui.CurrencyPicker
+import com.ks.expense.ui.appLocale
 import com.ks.expense.ui.categoryLabel
 import com.ks.utility.appupdate.AppUpdate
 import com.ks.utility.appupdate.GitHubRepo
@@ -90,6 +93,8 @@ fun SettingsScreen(store: ExpenseStore, onBack: () -> Unit) {
     var editing by remember { mutableStateOf<Category?>(null) }
     var addingCategory by rememberSaveable { mutableStateOf(false) }
     var pendingRestore by remember { mutableStateOf<BackupData?>(null) }
+    val defaultCurrency by store.settings.defaultCurrency.collectAsState()
+    var pickingCurrency by rememberSaveable { mutableStateOf(false) }
 
     fun report(block: suspend () -> String) {
         scope.launch {
@@ -142,6 +147,15 @@ fun SettingsScreen(store: ExpenseStore, onBack: () -> Unit) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp)) {
             item { Section(stringResource(R.string.common_language)) }
             item { LanguageChoice() }
+
+            item { Section(stringResource(R.string.settings_currency)) }
+            item {
+                ListItem(
+                    modifier = Modifier.clickable { pickingCurrency = true }.padding(horizontal = 8.dp),
+                    headlineContent = { Text(Currencies.label(defaultCurrency, appLocale())) },
+                    supportingContent = { Text(stringResource(R.string.settings_currency_hint)) },
+                )
+            }
 
             item { Section(stringResource(R.string.categories_title)) }
             items(categories, key = { it.id }) { category ->
@@ -209,6 +223,18 @@ fun SettingsScreen(store: ExpenseStore, onBack: () -> Unit) {
                 }
             }
         }
+    }
+
+    if (pickingCurrency) {
+        CurrencyPicker(
+            title = stringResource(R.string.settings_currency),
+            selected = defaultCurrency,
+            onPick = {
+                store.settings.setDefaultCurrency(it)
+                pickingCurrency = false
+            },
+            onDismiss = { pickingCurrency = false },
+        )
     }
 
     editing?.let { category ->

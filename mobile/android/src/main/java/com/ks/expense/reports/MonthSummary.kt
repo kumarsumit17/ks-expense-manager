@@ -37,10 +37,10 @@ object Months {
      * Groups [expenses] (already limited to [month]) by day in [zone]. Totals are per currency,
      * the default currency first; nothing is converted.
      */
-    fun summarize(month: YearMonth, expenses: List<Expense>, zone: ZoneId): MonthSummary {
+    fun summarize(month: YearMonth, expenses: List<Expense>, zone: ZoneId, first: String = Money.DEFAULT_CURRENCY): MonthSummary {
         val sorted = expenses.sortedWith(compareByDescending<Expense> { it.occurredAt }.thenByDescending { it.id })
-        val days = days(sorted, zone)
-        val totals = totals(sorted)
+        val days = days(sorted, zone, first)
+        val totals = totals(sorted, first)
         val byCurrency = totals.associate { it.currency to it.amountMinor }
         val categories = sorted.groupBy { it.categoryId to it.currency }
             .map { (key, list) ->
@@ -48,25 +48,25 @@ object Months {
                 val total = byCurrency.getValue(key.second)
                 CategoryTotal(key.first, key.second, sum, if (total == 0L) 0f else (sum.toDouble() / total).toFloat())
             }
-            .sortedWith(compareBy<CategoryTotal> { currencyOrder(it.currency) }.thenByDescending { it.amountMinor })
+            .sortedWith(compareBy<CategoryTotal> { currencyOrder(it.currency, first) }.thenByDescending { it.amountMinor })
         return MonthSummary(month, totals, categories, days, sorted.size)
     }
 
     /** [expenses] grouped by day in [zone], newest day and newest expense first. */
-    fun days(expenses: List<Expense>, zone: ZoneId): List<DayGroup> =
+    fun days(expenses: List<Expense>, zone: ZoneId, first: String = Money.DEFAULT_CURRENCY): List<DayGroup> =
         expenses.sortedWith(compareByDescending<Expense> { it.occurredAt }.thenByDescending { it.id })
             .groupBy { localDate(it.occurredAt, zone) }
-            .map { (date, list) -> DayGroup(date, list, totals(list)) }
+            .map { (date, list) -> DayGroup(date, list, totals(list, first)) }
             .sortedByDescending { it.date }
 
-    /** Sums per currency, the default currency first. */
-    fun totals(list: List<Expense>): List<Total> =
+    /** Sums per currency, [first] (the default currency) first. */
+    fun totals(list: List<Expense>, first: String = Money.DEFAULT_CURRENCY): List<Total> =
         list.groupBy { it.currency }
             .map { (currency, items) -> Total(currency, sum(items)) }
-            .sortedBy { currencyOrder(it.currency) }
+            .sortedBy { currencyOrder(it.currency, first) }
 
     private fun sum(list: List<Expense>): Long = list.fold(0L) { acc, e -> Math.addExact(acc, e.amountMinor) }
 
-    private fun currencyOrder(currency: String): String =
-        if (currency == Money.DEFAULT_CURRENCY) "" else currency
+    private fun currencyOrder(currency: String, first: String): String =
+        if (currency == first) "" else currency
 }

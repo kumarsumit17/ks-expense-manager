@@ -7,7 +7,7 @@ A minimalist, privacy-first personal finance and expense tracker. All data stays
 | | |
 |---|---|
 | **Platform** | Android |
-| **Tech stack** | Kotlin, Jetpack Compose, Room, DataStore |
+| **Tech stack** | Kotlin, Jetpack Compose, Room |
 
 ## Getting started
 

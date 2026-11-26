@@ -67,5 +67,9 @@
   "search.limited": "Showing the newest {count}.",
   "filter.dates": "Dates",
   "filter.dateRange": "{from} – {to}",
-  "filter.clear": "Clear filters"
+  "filter.clear": "Clear filters",
+  "expense.currency": "Currency: {code}",
+  "expense.currencyTitle": "Currency for this expense",
+  "settings.currency": "Default currency",
+  "settings.currencyHint": "New expenses and budgets start in it. Totals are shown per currency; nothing is converted."
 }

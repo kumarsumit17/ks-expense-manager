@@ -16,6 +16,7 @@ class BackupDataTest {
     @Test fun validData() {
         assertTrue(BackupData(listOf(food, mine), listOf(lunch)).isValid())
         assertTrue(BackupData(emptyList(), emptyList()).isValid())
+        assertTrue(BackupData(emptyList(), emptyList(), emptyList(), "USD").isValid())
         assertTrue(BackupData(listOf(food), emptyList(), listOf(Budget(1, null, 1_000_000, "INR"), Budget(2, 1, 200_000, "INR"))).isValid())
     }
 
@@ -32,6 +33,8 @@ class BackupDataTest {
             BackupData(listOf(food.copy(icon = " ")), emptyList()),
             BackupData(listOf(food.copy(id = 0)), emptyList()),
             BackupData(listOf(food), emptyList(), listOf(Budget(1, 9, 100, "INR"))),
+            BackupData(listOf(food), emptyList(), emptyList(), "XAU"),
+            BackupData(listOf(food), emptyList(), emptyList(), "usd"),
             BackupData(listOf(food), emptyList(), listOf(Budget(1, 1, 0, "INR"))),
             BackupData(listOf(food), emptyList(), listOf(Budget(1, 1, 100, "inr"))),
             BackupData(listOf(food), emptyList(), listOf(Budget(1, null, 100, "INR"), Budget(2, null, 200, "INR"))),

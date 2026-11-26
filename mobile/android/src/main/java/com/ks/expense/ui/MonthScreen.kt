@@ -91,7 +91,8 @@ fun MonthScreen(
     val expenses by remember(from, to) { store.dao.between(from, to) }.collectAsState(initial = null)
     val categories by remember { store.dao.categories() }.collectAsState(initial = emptyList())
     val byId = categories.associateBy { it.id }
-    val summary = remember(expenses, month) { expenses?.let { Months.summarize(month, it, zone) } }
+    val defaultCurrency by store.settings.defaultCurrency.collectAsState()
+    val summary = remember(expenses, month, defaultCurrency) { expenses?.let { Months.summarize(month, it, zone, defaultCurrency) } }
     val budgets by remember { store.dao.budgets() }.collectAsState(initial = emptyList())
     val overallBudget = budgets.firstOrNull { it.categoryId == null }
     val categoryBudgets = budgets.filter { it.categoryId != null }.associateBy { it.categoryId!! }
@@ -140,7 +141,7 @@ fun MonthScreen(
         ) {
             item { MonthHeader(month, onMove = { monthText = month.plusMonths(it).toString() }) }
             if (summary != null) {
-                item { TotalCard(summary.totals, summary.count, overallBudget, onClick = { budgetTarget = OVERALL }) }
+                item { TotalCard(summary.totals, summary.count, overallBudget, defaultCurrency, onClick = { budgetTarget = OVERALL }) }
                 if (summary.count == 0) {
                     item {
                         Text(
@@ -170,10 +171,10 @@ fun MonthScreen(
         BudgetDialog(
             title = category?.let { stringResource(R.string.budget_for_category, categoryLabel(it)) }
                 ?: stringResource(R.string.budget_title),
-            currency = current?.currency ?: Money.DEFAULT_CURRENCY,
+            currency = current?.currency ?: defaultCurrency,
             currentMinor = current?.amountMinor,
             onSave = { amount ->
-                scope.launch { store.dao.setBudget(category?.id, amount, current?.currency ?: Money.DEFAULT_CURRENCY) }
+                scope.launch { store.dao.setBudget(category?.id, amount, current?.currency ?: defaultCurrency) }
                 budgetTarget = null
             },
             onDismiss = { budgetTarget = null },
@@ -185,6 +186,7 @@ fun MonthScreen(
         ExpenseSheet(
             existing = editing,
             categories = categories,
+            defaultCurrency = defaultCurrency,
             onSave = { expense ->
                 scope.launch { if (expense.id == 0L) store.dao.insert(expense) else store.dao.update(expense) }
                 adding = false
@@ -225,7 +227,7 @@ private fun MonthHeader(month: YearMonth, onMove: (Long) -> Unit) {
 }
 
 @Composable
-private fun TotalCard(totals: List<Total>, count: Int, budget: Budget?, onClick: () -> Unit) {
+private fun TotalCard(totals: List<Total>, count: Int, budget: Budget?, defaultCurrency: String, onClick: () -> Unit) {
     Column(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 24.dp, vertical = 8.dp)) {
         Text(
             stringResource(R.string.month_total),
@@ -233,7 +235,7 @@ private fun TotalCard(totals: List<Total>, count: Int, budget: Budget?, onClick:
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (totals.isEmpty()) {
-            Text(money(0, Money.DEFAULT_CURRENCY), style = MaterialTheme.typography.displaySmall)
+            Text(money(0, defaultCurrency), style = MaterialTheme.typography.displaySmall)
         }
         totals.forEach {
             Text(money(it.amountMinor, it.currency), style = MaterialTheme.typography.displaySmall)

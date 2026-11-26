@@ -10,8 +10,8 @@ import org.json.JSONObject
 /** The backup file: JSON written and read with Android's built-in org.json. */
 object BackupJson {
     const val FORMAT = "ks-expense-backup"
-    /** 2 from stage 2 (budgets); version 1 files still read, with no budgets. */
-    const val VERSION = 2
+    /** 2 added budgets, 3 the default currency; older files still read. */
+    const val VERSION = 3
 
     fun write(data: BackupData, createdAt: Long): String {
         val categories = JSONArray()
@@ -56,6 +56,7 @@ object BackupJson {
             .put("categories", categories)
             .put("expenses", expenses)
             .put("budgets", budgets)
+            .put("settings", JSONObject().put("defaultCurrency", data.defaultCurrency ?: JSONObject.NULL))
             .toString(1)
     }
 
@@ -98,7 +99,8 @@ object BackupJson {
             } else {
                 emptyList()
             }
-            BackupData(categories, expenses, budgets).takeIf { it.isValid() }
+            val defaultCurrency = root.optJSONObject("settings")?.let { if (it.isNull("defaultCurrency")) null else it.getString("defaultCurrency") }
+            BackupData(categories, expenses, budgets, defaultCurrency).takeIf { it.isValid() }
         }
     } catch (_: JSONException) {
         null

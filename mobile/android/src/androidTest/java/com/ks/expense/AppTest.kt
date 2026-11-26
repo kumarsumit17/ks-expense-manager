@@ -41,6 +41,19 @@ class AppTest {
         compose.onAllNodesWithText("₹1,234.50").onFirst().assertIsDisplayed()
     }
 
+    /** Another currency for one expense: the chip opens the picker; the amount shows in dollars. */
+    @Test fun expenseInAnotherCurrency() {
+        val locale = res.configuration.locales[0]
+        compose.onNodeWithContentDescription(res.getString(R.string.expense_add)).performClick()
+        compose.onNodeWithText(res.getString(R.string.expense_currency, "INR")).performClick()
+        compose.onNodeWithTag("currency-search").performTextInput("USD")
+        compose.onNodeWithText(com.ks.expense.transactions.Currencies.label("USD", locale)).performClick()
+        compose.onNodeWithTag("amount").performTextInput("12.5")
+        compose.onNodeWithText(res.getString(R.string.category_food)).performClick()
+        compose.onNodeWithText(res.getString(R.string.common_save)).performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("$12.50").fetchSemanticsNodes().isNotEmpty() }
+    }
+
     @Test fun noInternetPermission() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val info = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)

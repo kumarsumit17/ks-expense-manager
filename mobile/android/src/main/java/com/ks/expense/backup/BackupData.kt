@@ -6,7 +6,13 @@ import com.ks.expense.data.Expense
 import com.ks.expense.transactions.Money
 
 /** Everything a backup file holds. */
-data class BackupData(val categories: List<Category>, val expenses: List<Expense>, val budgets: List<Budget> = emptyList()) {
+data class BackupData(
+    val categories: List<Category>,
+    val expenses: List<Expense>,
+    val budgets: List<Budget> = emptyList(),
+    /** Null in files from before version 3, which leave the setting as it is. */
+    val defaultCurrency: String? = null,
+) {
     /** True when the data can be put into the database as it is. */
     fun isValid(): Boolean {
         val categoryIds = categories.map { it.id }.toSet()
@@ -27,7 +33,8 @@ data class BackupData(val categories: List<Category>, val expenses: List<Expense
                     it.amountMinor in 1..Money.MAX_MINOR &&
                     CURRENCY.matches(it.currency)
             }
-        return expensesOk && budgetsOk
+        val settingsOk = defaultCurrency == null || com.ks.expense.transactions.Currencies.isValid(defaultCurrency)
+        return expensesOk && budgetsOk && settingsOk
     }
 
     companion object {
