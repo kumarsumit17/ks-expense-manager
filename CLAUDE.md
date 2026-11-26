@@ -32,6 +32,7 @@ Minimalist, privacy-first personal finance and expense tracker.
 ./gradlew check                         # unit tests, language files, no-INTERNET check
 ```
 - Gradle tasks run from the root apply to the one module, `:mobile:android`. The debug build is `com.ks.expense.debug`.
+- **Build, test, release, no waiting** (owner's suite rule): every feature or fix is built, tested on the emulator and in the release rehearsal, pushed to `dev` and released with the next `android-v` tag, without asking before the tag. A feature raises MINOR, a fix raises PATCH. Never commit or release while a test fails. The owner's real-phone checks come later and never block a release; what they find goes into the next version. Before each release, move the `ks-utility` pin to its newest tag in its own commit and test it.
 - Releases: tag `android-vX.Y.Z` (annotated, on `main`; the suite's platform tags, used by one-platform apps too). v0.1.0 and v0.1.1 (the bridge release) have plain tags; no plain tag after that. Rehearse with Actions › Release › Run workflow (`platform: android`).
 - Interface text is in `mobile/android/src/main/lang/{en,hi}.json`; `lang.mjs android` turns it into resources under `build/` before every build.
 
