@@ -1,5 +1,6 @@
 # 2026-11-27
 
+* **Update**: `ks-utility` moved to `v0.18.1` (a bump-workflow fix).
 * **Update**: `ks-utility` moved to `v0.18.0`; `release.yml` and `ks-utility-bump.yml` call ks-utility's shared workflows at `@main` (owner's decision: `@main` always equals the newest release, so only the code pin moves). No `KS_WORKFLOWS_TOKEN`.
 * **Update**: `ks-utility` moved from `v0.16.0` to `v0.17.0`, with the shared-workflow calls (by hand: the bump workflow's commit step failed on a missing `*.yaml` glob, reported to ks-utility).
 * **Update**: Release workflow at `kotlin-app-release.yml@v0.16.0`, which runs ks-suite-check before building; `.github/workflows/ks-utility-bump.yml` moves the pin to each new ks-utility tag by itself (tests first). `ks-suite-check.json` declares the one allowed exception, `no-updater`: the app is offline by design ([App updates](app-updates.md)).
