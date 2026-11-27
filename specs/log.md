@@ -1,5 +1,6 @@
 # 2026-11-27
 
+* **Update**: `ks-utility` moved from `v0.16.0` to `v0.17.0`, with the shared-workflow calls (by hand: the bump workflow's commit step failed on a missing `*.yaml` glob, reported to ks-utility).
 * **Update**: Release workflow at `kotlin-app-release.yml@v0.16.0`, which runs ks-suite-check before building; `.github/workflows/ks-utility-bump.yml` moves the pin to each new ks-utility tag by itself (tests first). `ks-suite-check.json` declares the one allowed exception, `no-updater`: the app is offline by design ([App updates](app-updates.md)).
 * **Creation**: [Google Play](google-play.md): the `play` build type for the AAB (no releases link), store listing in English and Hindi with icon, feature graphic and screenshots, `PRIVACY.md`, and the Play Console answers and owner steps. Release workflow on `kotlin-app-release.yml@v0.14.0` with `play-build-type: play`.
 
