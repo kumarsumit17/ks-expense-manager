@@ -24,6 +24,10 @@ What it does and the roadmap: [specs/plan.md](specs/plan.md).
 Releases are cut by pushing an annotated Android tag on `main` (`git tag -a android-v1.2.3 -m android-v1.2.3 && git push origin android-v1.2.3`).
 See the suite-level [CI/CD guide](https://github.com/kumasumit/ks-suite#-cicd-semantic-versioning--automated-signing).
 
+## Privacy
+
+No data collected, no internet: see [PRIVACY.md](PRIVACY.md). Google Play: [specs/google-play.md](specs/google-play.md).
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

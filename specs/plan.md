@@ -117,7 +117,8 @@ All from the version catalog; only the artifacts used.
 | 2 (built 2026-11-26) | `android-v0.2.0` | Budgets, search and filters |
 | 2, second part (built 2026-11-26) | `android-v0.3.0` | Other currencies |
 | 3 (built 2026-11-26) | `android-v0.4.0` | Recurring expenses, subscriptions from ks-tv-launcher |
-| 1.0 | `android-v1.0.0` | After the owner has used it on a real phone; Google Play readiness is planned separately |
+| Play readiness (built 2026-11-27) | `android-v0.5.0` | The `play` build type for the AAB, store listing in English and Hindi, privacy policy ([Google Play](google-play.md)) |
+| 1.0 | `android-v1.0.0` | After the owner has used it on a real phone and published it on Google Play |
 
 Each feature or fix is built and tested on `dev` (emulator and the release rehearsal) and released with the next `android-v` tag, with no approval asked before the tag ([Build, test, release, no waiting](https://github.com/kumasumit/ks-suite/blob/main/specs/release-cycle.md)): a feature raises MINOR, a fix raises PATCH, and nothing is committed or released while a test fails. The owner's hand checks on a real phone come later, never block a release, and what they find goes into the next version. Before the first release, the repository's four signing secrets must exist first ([signing first](https://github.com/kumasumit/ks-suite/blob/main/specs/versioning-signing.md#a-new-repository-signing-first)), and a rehearsal run must pass.
 

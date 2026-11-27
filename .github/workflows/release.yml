@@ -35,7 +35,7 @@ concurrency:
 
 jobs:
   release:
-    uses: kumasumit/ks-utility/.github/workflows/kotlin-app-release.yml@v0.10.0
+    uses: kumasumit/ks-utility/.github/workflows/kotlin-app-release.yml@v0.14.0
     permissions:
       contents: write
       id-token: write
@@ -47,5 +47,6 @@ jobs:
       display-name: KS Expense Manager
       # Phone only: no tv-module, no desktop modules (specs/plan.md).
       android-module: ":mobile:android"
-      test-tasks: ":mobile:android:testDebugUnitTest :mobile:android:checkLanguageFiles :mobile:android:checkNoInternetRelease"
+      play-build-type: "play"             # the AAB is the Google Play build (no releases link)
+      test-tasks: ":mobile:android:testDebugUnitTest :mobile:android:checkLanguageFiles :mobile:android:checkNoInternetRelease :mobile:android:checkNoInternetPlay"
     secrets: inherit

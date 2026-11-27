@@ -1,0 +1,13 @@
+KS Expense Manager is a small, private expense tracker. Everything stays on your phone: the app has no internet permission, no account, no ads and no tracking.
+
+• Add an expense in three taps: +, a category, Save.
+• See each month at a glance: the total, a bar per category, and every expense by day.
+• Rupees by default, with Indian digit grouping (₹1,23,456). Pick another default currency, or another currency for one expense; totals are kept per currency.
+• Monthly budgets, for the whole month or one category, turn amber at 80 % and red when you go over.
+• Search all months by note, amount or category, and filter by category and dates.
+• Recurring expenses: rent, bills and subscriptions are added on their date when you open the app.
+• Import your subscriptions from KS TV Launcher by sharing them.
+• Back up everything to a file you choose and restore it on any phone. Export to CSV for a spreadsheet.
+• English and Hindi.
+
+Free and open source, part of KS-Suite.

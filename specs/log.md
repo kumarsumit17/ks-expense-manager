@@ -1,3 +1,7 @@
+# 2026-11-27
+
+* **Creation**: [Google Play](google-play.md): the `play` build type for the AAB (no releases link), store listing in English and Hindi with icon, feature graphic and screenshots, `PRIVACY.md`, and the Play Console answers and owner steps. Release workflow on `kotlin-app-release.yml@v0.14.0` with `play-build-type: play`.
+
 # 2026-11-26
 
 * **Update**: `ks-utility` moved from `v0.13.2` to `v0.14.0` (shared Tauri release workflows; no change to the Kotlin code or the language files).

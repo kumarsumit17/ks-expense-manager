@@ -42,6 +42,8 @@ android {
         versionCode = appVersionCode
         versionName = appVersionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // The GitHub builds link to the releases page; the Google Play build does not (specs/google-play.md).
+        buildConfigField("boolean", "RELEASES_LINK", "true")
     }
 
     signingConfigs {
@@ -67,6 +69,13 @@ android {
             signingConfigs.getByName("release").takeIf { it.storeFile != null }?.let {
                 signingConfig = it
             }
+        }
+        // The Google Play build (the release workflow's AAB, play-build-type): the release build
+        // without the link to GitHub releases, because Play updates the app itself.
+        create("play") {
+            initWith(getByName("release"))
+            matchingFallbacks += listOf("release")
+            buildConfigField("boolean", "RELEASES_LINK", "false")
         }
     }
 

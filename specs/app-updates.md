@@ -14,3 +14,4 @@ Every KS-Suite app has an **App updates** section ([suite behaviour](https://git
 - No "Check for updates automatically" switch and no **Check for updates** button, since both need the network.
 - The user installs the new APK by hand. Android accepts it as an update only when it is signed with the same key, which the suite's release signing keeps.
 - Changing this (for example, allowing the one daily request the other apps make) is a change to [Constraints](constraints.md) and needs the owner's decision first.
+- The Google Play build (`play` build type, the AAB) shows only "This is version X": no **Get the new version** link, because Play updates the app ([Google Play](google-play.md)).

@@ -230,16 +230,19 @@ fun SettingsScreen(store: ExpenseStore, onBack: () -> Unit) {
                         if (AppUpdate.isDevVersion(version)) stringResource(R.string.common_app_update_dev)
                         else stringResource(R.string.common_app_update_current, version),
                     )
-                    OutlinedButton(
-                        onClick = {
-                            try {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, RELEASES_PAGE.toUri()))
-                            } catch (_: ActivityNotFoundException) {
-                                scope.launch { snackbar.showSnackbar(resources.getString(R.string.common_error_generic)) }
-                            }
-                        },
-                        modifier = Modifier.padding(top = 8.dp),
-                    ) { Text(stringResource(R.string.common_app_update_get_button)) }
+                    // The Google Play build has no link: Play updates the app.
+                    if (BuildConfig.RELEASES_LINK) {
+                        OutlinedButton(
+                            onClick = {
+                                try {
+                                    context.startActivity(Intent(Intent.ACTION_VIEW, RELEASES_PAGE.toUri()))
+                                } catch (_: ActivityNotFoundException) {
+                                    scope.launch { snackbar.showSnackbar(resources.getString(R.string.common_error_generic)) }
+                                }
+                            },
+                            modifier = Modifier.padding(top = 8.dp),
+                        ) { Text(stringResource(R.string.common_app_update_get_button)) }
+                    }
                 }
             }
         }

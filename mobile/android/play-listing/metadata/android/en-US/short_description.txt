@@ -1,0 +1,1 @@
+Private, offline expense tracker in rupees. No ads, no account, no internet.
